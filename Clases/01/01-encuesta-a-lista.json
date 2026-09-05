@@ -1,0 +1,260 @@
+{
+  "name": "Clase 1 - Encuesta a lista de distribucion",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "9407bf34-7309-4814-b5f4-614ce5cd57c4",
+      "name": "Disparador manual",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://SERVICIOS-CATEDRA/encuestas/respuestas",
+        "options": {}
+      },
+      "id": "a3f067f1-f876-4b03-9c43-ff51fdf74c22",
+      "name": "Traer respuestas",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        20,
+        300
+      ],
+      "notes": "Devuelve un objeto con el array adentro, no el array suelto.",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "responses",
+        "options": {}
+      },
+      "id": "76c78373-7c11-4d39-9b4d-64c567edf468",
+      "name": "Separar respuestas",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ],
+      "notes": "Sin este nodo el flujo procesa 1 item en vez de 10.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "56b4a6a7-229e-40c8-9b77-64443a1fd3d4",
+              "leftValue": "={{ $json.opt_in }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "3282a721-3ded-405e-9456-cfc8c84d276e",
+      "name": "Consintio recibir novedades",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ],
+      "notes": "Salida 0 = si. Salida 1 = no."
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4b31f7b2-b584-4989-8e63-c14f03b6e759",
+              "name": "email",
+              "value": "={{ ($json.email_address || '').trim().toLowerCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "a1a37be2-b316-42fd-a377-5c441edd7d5f",
+              "name": "nombre",
+              "value": "={{ [($json.first_name || '').trim(), ($json.last_name || '').trim()].filter(Boolean).join(' ') }}",
+              "type": "string"
+            },
+            {
+              "id": "5afb4deb-0997-48b9-89bc-e09d5f580d1d",
+              "name": "origen",
+              "value": "encuesta-satisfaccion",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "options": {}
+      },
+      "id": "d1278ae8-0f72-4ad3-802d-9d6741c2e5b8",
+      "name": "Mapear al formato del servicio B",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        700,
+        200
+      ],
+      "notes": "email_address del servicio A pasa a llamarse email en el servicio B.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://SERVICIOS-CATEDRA/listas/contactos",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ email: $json.email, nombre: $json.nombre, origen: $json.origen }) }}",
+        "options": {}
+      },
+      "id": "dfc1140c-8022-4530-84a8-59a8c4e7dce8",
+      "name": "Alta en la lista",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        940,
+        200
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {},
+      "id": "9086b680-7c6b-4975-a380-38df52745e1b",
+      "name": "Descartados",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        700,
+        420
+      ],
+      "notes": "No dieron consentimiento. Quedan a la vista, no se tiran.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "content": "## Practica clase 1\n\nEncuesta (servicio A) a lista de distribucion (servicio B).\n\n**Antes de ejecutar:** reemplazar `SERVICIOS-CATEDRA` en los nodos **Traer respuestas** y **Alta en la lista**.\n\n**Resultado esperado:** 10 respuestas entran, 7 se dan de alta, 3 quedan en Descartados.",
+        "width": 460,
+        "height": 200,
+        "color": 4
+      },
+      "id": "5b9f11db-822c-4232-8671-d84f11e5393b",
+      "name": "Nota ab62",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### El renombrado\n\nEl servicio A dice `email_address`, `first_name` y `last_name`.\nEl servicio B espera `email`, `nombre` y `origen`.\n\nEsa traduccion es el corazon de la clase.",
+        "width": 420,
+        "height": 160,
+        "color": 5
+      },
+      "id": "ec671201-b1c5-49ef-bf5e-64aa081b9e88",
+      "name": "Nota 6239",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        660,
+        20
+      ]
+    }
+  ],
+  "connections": {
+    "Disparador manual": {
+      "main": [
+        [
+          {
+            "node": "Traer respuestas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Traer respuestas": {
+      "main": [
+        [
+          {
+            "node": "Separar respuestas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Separar respuestas": {
+      "main": [
+        [
+          {
+            "node": "Consintio recibir novedades",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consintio recibir novedades": {
+      "main": [
+        [
+          {
+            "node": "Mapear al formato del servicio B",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Descartados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mapear al formato del servicio B": {
+      "main": [
+        [
+          {
+            "node": "Alta en la lista",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

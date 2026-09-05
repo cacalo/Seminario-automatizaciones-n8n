@@ -1,0 +1,510 @@
+{
+  "name": "2 - Homogenización de fuentes - Template",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        0
+      ],
+      "id": "26ff27dc-74f9-4d65-b789-c863c67da00e",
+      "name": "Ejecución manual"
+    },
+    {
+      "parameters": {
+        "content": "## Entrada",
+        "height": 448,
+        "width": 192,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -112,
+        -176
+      ],
+      "typeVersion": 1,
+      "id": "ce8ba22b-0f07-481a-be78-95a557e0d619",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Proceso",
+        "height": 448,
+        "width": 960,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        96,
+        -176
+      ],
+      "typeVersion": 1,
+      "id": "f3657f74-5adf-4258-a3ae-c3d52aca6551",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Salida",
+        "height": 448,
+        "width": 224,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1088,
+        -176
+      ],
+      "typeVersion": 1,
+      "id": "9717eee4-423e-4c03-8dbd-14ba0406a071",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Disparador",
+        "height": 176,
+        "width": 192,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -320,
+        -48
+      ],
+      "typeVersion": 1,
+      "id": "4d383c2a-25d8-469e-9417-4ab5e4dee5fa",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  \"form\": \"inscripcion-jornada-2026\",\n  \"exportedAt\": \"2026-03-04T10:00:00Z\",\n  \"submissions\": [\n    {\n      \"id\": \"web-0001\",\n      \"submittedAt\": \"2026-03-02T14:23:11Z\",\n      \"contact\": {\n        \"firstName\": \"Ana\",\n        \"lastName\": \"Ferreyra\",\n        \"email\": \"ana.ferreyra@ejemplo.com\",\n        \"phone\": \"+54 341 555-0198\"\n      },\n      \"answers\": {\n        \"company\": \"Cooperativa El Molino\",\n        \"role\": \"Analista de sistemas\",\n        \"consent\": true\n      }\n    },\n    {\n      \"id\": \"web-0002\",\n      \"submittedAt\": \"2026-03-01T09:12:44Z\",\n      \"contact\": {\n        \"firstName\": \"Bruno\",\n        \"lastName\": \"Martinez\",\n        \"email\": \"bruno.martinez@ejemplo.com\",\n        \"phone\": \"+54 341 555-0143\"\n      },\n      \"answers\": {\n        \"company\": \"Estudio Martinez\",\n        \"role\": \"Contador\",\n        \"consent\": true\n      }\n    },\n    {\n      \"id\": \"web-0003\",\n      \"submittedAt\": \"2026-03-02T16:40:02Z\",\n      \"contact\": {\n        \"firstName\": \"Carla\",\n        \"lastName\": \"Ojeda\",\n        \"email\": \"carla.ojeda@ejemplo.com\",\n        \"phone\": \"+54 341 555-0177\"\n      },\n      \"answers\": {\n        \"company\": \"Municipalidad de Funes\",\n        \"role\": \"Coordinadora\",\n        \"consent\": false\n      }\n    },\n    {\n      \"id\": \"web-0004\",\n      \"submittedAt\": \"2026-03-03T11:05:30Z\",\n      \"contact\": {\n        \"firstName\": \"  Diego\",\n        \"lastName\": \"Sosa  \",\n        \"email\": \"  DIEGO.SOSA@Ejemplo.com \",\n        \"phone\": \"0341 15 555-0121\"\n      },\n      \"answers\": {\n        \"company\": \"Sosa Logistica\",\n        \"role\": \"Jefe de deposito\",\n        \"consent\": true\n      }\n    },\n    {\n      \"id\": \"web-0005\",\n      \"submittedAt\": \"2026-03-03T11:48:19Z\",\n      \"contact\": {\n        \"firstName\": \"Elena\",\n        \"lastName\": \"Ruiz\",\n        \"email\": \"elena.ruiz@\",\n        \"phone\": \"+54 341 555-0160\"\n      },\n      \"answers\": {\n        \"company\": \"Ruiz y Asociados\",\n        \"role\": \"Socia\",\n        \"consent\": true\n      }\n    },\n    {\n      \"id\": \"web-0006\",\n      \"submittedAt\": \"2026-03-03T15:22:07Z\",\n      \"contact\": {\n        \"firstName\": \"Facundo\",\n        \"lastName\": \"Ibarra\",\n        \"email\": \"facundo.ibarra@ejemplo.com\",\n        \"phone\": null\n      },\n      \"answers\": {\n        \"company\": null,\n        \"role\": \"Estudiante\",\n        \"consent\": true\n      }\n    },\n    {\n      \"id\": \"web-0007\",\n      \"submittedAt\": \"2026-03-03T18:59:41-03:00\",\n      \"contact\": {\n        \"firstName\": \"Gabriela\",\n        \"lastName\": \"Paz\",\n        \"email\": \"gabriela.paz@ejemplo.com\",\n        \"phone\": \"+54 9 341 555 0134\"\n      },\n      \"answers\": {\n        \"company\": \"Paz Consultora\",\n        \"role\": \"Directora\",\n        \"consent\": true\n      }\n    },\n    {\n      \"id\": \"web-0008\",\n      \"submittedAt\": \"2026-03-04T08:14:55Z\",\n      \"contact\": {\n        \"firstName\": \"Hugo\",\n        \"lastName\": \"Benitez\",\n        \"phone\": \"+54 341 555-0112\"\n      },\n      \"answers\": {\n        \"company\": \"Benitez Hnos\",\n        \"role\": \"Socio gerente\",\n        \"consent\": true\n      }\n    }\n  ]\n}\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -64,
+        -128
+      ],
+      "id": "7046b4bb-269e-4522-b1ba-a93676172e96",
+      "name": "Fuente A (Web)"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    \"record_id\": 4412,\n    \"full_name\": \"BRUNO  MARTINEZ\",\n    \"email_address\": \"bruno.martinez@ejemplo.com \",\n    \"phone_number\": \"3415550143\",\n    \"org\": \"Estudio Martinez\",\n    \"job_title\": \"Contador publico\",\n    \"opt_in\": \"yes\",\n    \"created\": \"28/02/2026\"\n  },\n  {\n    \"record_id\": 4415,\n    \"full_name\": \"Hernan Quiroga\",\n    \"email_address\": \"hernan.quiroga@ejemplo.com\",\n    \"phone_number\": \"3415550189\",\n    \"org\": \"Quiroga Campos SA\",\n    \"job_title\": \"Administrador\",\n    \"opt_in\": \"no\",\n    \"created\": \"01/03/2026\"\n  },\n  {\n    \"record_id\": 4418,\n    \"full_name\": \"Ivana Ledesma\",\n    \"email_address\": \"ivana.ledesma@ejemplo.com\",\n    \"phone_number\": \"3415550107\",\n    \"org\": \"Ledesma Servicios\",\n    \"job_title\": \"Responsable de compras\",\n    \"opt_in\": \"yes\",\n    \"created\": \"01/03/2026\"\n  },\n  {\n    \"record_id\": 4421,\n    \"full_name\": \"Jorge  Da Silva\",\n    \"email_address\": \"jorge.dasilva@ejemplo.com\",\n    \"phone_number\": \"+54 341 555-0166\",\n    \"org\": \"Da Silva Transportes\",\n    \"job_title\": \"\",\n    \"opt_in\": \"YES\",\n    \"created\": \"02/03/2026\"\n  },\n  {\n    \"record_id\": 4423,\n    \"full_name\": \"Karina Nunez\",\n    \"email_address\": \"karina.nunez@ejemplo.com\",\n    \"phone_number\": \"3415550194\",\n    \"org\": \"Nunez Diseno\",\n    \"job_title\": \"Titular\",\n    \"opt_in\": null,\n    \"created\": \"02/03/2026\"\n  },\n  {\n    \"record_id\": 4427,\n    \"full_name\": \"Leandro Pinto\",\n    \"email_address\": \"leandro.pinto@ejemplo.com\",\n    \"phone_number\": \"3415550152\",\n    \"org\": \"Pinto Metalurgica\",\n    \"job_title\": \"Encargado de planta\",\n    \"opt_in\": \"yes\",\n    \"created\": \"31/02/2026\"\n  },\n  {\n    \"record_id\": 4430,\n    \"full_name\": \"Maria Jose Alvez\",\n    \"email_address\": \"maria.jose.alvez@ejemplo.com\",\n    \"phone_number\": \"3415550175\",\n    \"org\": \"Alvez Indumentaria\",\n    \"job_title\": \"Gerenta comercial\",\n    \"opt_in\": \"yes\",\n    \"created\": \"03/03/2026\"\n  }\n]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -64,
+        0
+      ],
+      "id": "6050843b-3065-44ec-acdb-a95c7c2a711b",
+      "name": "Fuente B (CRM)"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    \"Nombre y Apellido\": \"Ana Ferreyra\",\n    \"Correo\": \"ANA.FERREYRA@EJEMPLO.COM\",\n    \"Teléfono\": \"341 555-0198\",\n    \"Empresa\": \"Coop. El Molino\",\n    \"Cargo\": \"Analista\",\n    \"Acepta novedades\": \"Sí\",\n    \"Fecha\": \"02-03-2026\"\n  },\n  {\n    \"Nombre y Apellido\": \"Nicolás Bravo\",\n    \"Correo\": \"nicolas.bravo@ejemplo.com\",\n    \"Teléfono\": \"3415550118\",\n    \"Empresa\": \"Bravo Refrigeración\",\n    \"Cargo\": \"Técnico\",\n    \"Acepta novedades\": \"Si\",\n    \"Fecha\": \"03-03-2026\"\n  },\n  {\n    \"Nombre y Apellido\": \"Olga Ferrari\",\n    \"Correo\": \"olga.ferrari@ejemplo.com\",\n    \"Teléfono\": \"\",\n    \"Empresa\": \"Ferrari Panadería\",\n    \"Cargo\": \"Dueña\",\n    \"Acepta novedades\": \"SI\",\n    \"Fecha\": \"03-03-2026\"\n  },\n  {\n    \"Nombre y Apellido\": \"Pablo Rey\",\n    \"Correo\": \"pablo.rey@ejemplo.com\",\n    \"Teléfono\": \"3415550129\",\n    \"Empresa\": \"Rey Seguros\",\n    \"Cargo\": \"Productor\",\n    \"Acepta novedades\": \"No\",\n    \"Fecha\": \"03-03-2026\"\n  },\n  {\n    \"Nombre y Apellido\": \"Ana Ferreyra\",\n    \"Correo\": \"ana.ferreyra@ejemplo.com \",\n    \"Teléfono\": \"341 555-0198\",\n    \"Empresa\": \"Cooperativa El Molino\",\n    \"Cargo\": \"Analista de sistemas\",\n    \"Acepta novedades\": \"Sí\",\n    \"Fecha\": \"03-03-2026\"\n  },\n  {\n    \"Nombre y Apellido\": \"Rocío  Vega\",\n    \"Correo\": \"rocio.vega@ejemplo.com\",\n    \"Teléfono\": \"3415550183\",\n    \"Empresa\": \"Vega Marketing\",\n    \"Cargo\": \"Community manager\",\n    \"Acepta novedades\": \"sí\",\n    \"Fecha\": \"\"\n  },\n  {\n    \"Nombre y Apellido\": \"\",\n    \"Correo\": \"sergio.luna@ejemplo.com\",\n    \"Teléfono\": \"3415550171\",\n    \"Empresa\": \"Luna Herrería\",\n    \"Cargo\": \"Herrero\",\n    \"Acepta novedades\": \"Sí\",\n    \"Fecha\": \"03-03-2026\"\n  }\n]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -64,
+        128
+      ],
+      "id": "1483f39d-2130-4a7f-8766-b6685bdf7d9e",
+      "name": "Fuente C (Planilla)"
+    }
+  ],
+  "pinData": {
+    "Fuente A (Web)": [
+      {
+        "json": {
+          "form": "inscripcion-jornada-2026",
+          "exportedAt": "2026-03-04T10:00:00Z",
+          "submissions": [
+            {
+              "id": "web-0001",
+              "submittedAt": "2026-03-02T14:23:11Z",
+              "contact": {
+                "firstName": "Ana",
+                "lastName": "Ferreyra",
+                "email": "ana.ferreyra@ejemplo.com",
+                "phone": "+54 341 555-0198"
+              },
+              "answers": {
+                "company": "Cooperativa El Molino",
+                "role": "Analista de sistemas",
+                "consent": true
+              }
+            },
+            {
+              "id": "web-0002",
+              "submittedAt": "2026-03-01T09:12:44Z",
+              "contact": {
+                "firstName": "Bruno",
+                "lastName": "Martinez",
+                "email": "bruno.martinez@ejemplo.com",
+                "phone": "+54 341 555-0143"
+              },
+              "answers": {
+                "company": "Estudio Martinez",
+                "role": "Contador",
+                "consent": true
+              }
+            },
+            {
+              "id": "web-0003",
+              "submittedAt": "2026-03-02T16:40:02Z",
+              "contact": {
+                "firstName": "Carla",
+                "lastName": "Ojeda",
+                "email": "carla.ojeda@ejemplo.com",
+                "phone": "+54 341 555-0177"
+              },
+              "answers": {
+                "company": "Municipalidad de Funes",
+                "role": "Coordinadora",
+                "consent": false
+              }
+            },
+            {
+              "id": "web-0004",
+              "submittedAt": "2026-03-03T11:05:30Z",
+              "contact": {
+                "firstName": "  Diego",
+                "lastName": "Sosa  ",
+                "email": "  DIEGO.SOSA@Ejemplo.com ",
+                "phone": "0341 15 555-0121"
+              },
+              "answers": {
+                "company": "Sosa Logistica",
+                "role": "Jefe de deposito",
+                "consent": true
+              }
+            },
+            {
+              "id": "web-0005",
+              "submittedAt": "2026-03-03T11:48:19Z",
+              "contact": {
+                "firstName": "Elena",
+                "lastName": "Ruiz",
+                "email": "elena.ruiz@",
+                "phone": "+54 341 555-0160"
+              },
+              "answers": {
+                "company": "Ruiz y Asociados",
+                "role": "Socia",
+                "consent": true
+              }
+            },
+            {
+              "id": "web-0006",
+              "submittedAt": "2026-03-03T15:22:07Z",
+              "contact": {
+                "firstName": "Facundo",
+                "lastName": "Ibarra",
+                "email": "facundo.ibarra@ejemplo.com",
+                "phone": null
+              },
+              "answers": {
+                "company": null,
+                "role": "Estudiante",
+                "consent": true
+              }
+            },
+            {
+              "id": "web-0007",
+              "submittedAt": "2026-03-03T18:59:41-03:00",
+              "contact": {
+                "firstName": "Gabriela",
+                "lastName": "Paz",
+                "email": "gabriela.paz@ejemplo.com",
+                "phone": "+54 9 341 555 0134"
+              },
+              "answers": {
+                "company": "Paz Consultora",
+                "role": "Directora",
+                "consent": true
+              }
+            },
+            {
+              "id": "web-0008",
+              "submittedAt": "2026-03-04T08:14:55Z",
+              "contact": {
+                "firstName": "Hugo",
+                "lastName": "Benitez",
+                "phone": "+54 341 555-0112"
+              },
+              "answers": {
+                "company": "Benitez Hnos",
+                "role": "Socio gerente",
+                "consent": true
+              }
+            }
+          ]
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Fuente B (CRM)": [
+      {
+        "json": {
+          "record_id": 4412,
+          "full_name": "BRUNO  MARTINEZ",
+          "email_address": "bruno.martinez@ejemplo.com ",
+          "phone_number": "3415550143",
+          "org": "Estudio Martinez",
+          "job_title": "Contador publico",
+          "opt_in": "yes",
+          "created": "28/02/2026"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "record_id": 4415,
+          "full_name": "Hernan Quiroga",
+          "email_address": "hernan.quiroga@ejemplo.com",
+          "phone_number": "3415550189",
+          "org": "Quiroga Campos SA",
+          "job_title": "Administrador",
+          "opt_in": "no",
+          "created": "01/03/2026"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "record_id": 4418,
+          "full_name": "Ivana Ledesma",
+          "email_address": "ivana.ledesma@ejemplo.com",
+          "phone_number": "3415550107",
+          "org": "Ledesma Servicios",
+          "job_title": "Responsable de compras",
+          "opt_in": "yes",
+          "created": "01/03/2026"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "record_id": 4421,
+          "full_name": "Jorge  Da Silva",
+          "email_address": "jorge.dasilva@ejemplo.com",
+          "phone_number": "+54 341 555-0166",
+          "org": "Da Silva Transportes",
+          "job_title": "",
+          "opt_in": "YES",
+          "created": "02/03/2026"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "record_id": 4423,
+          "full_name": "Karina Nunez",
+          "email_address": "karina.nunez@ejemplo.com",
+          "phone_number": "3415550194",
+          "org": "Nunez Diseno",
+          "job_title": "Titular",
+          "opt_in": null,
+          "created": "02/03/2026"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "record_id": 4427,
+          "full_name": "Leandro Pinto",
+          "email_address": "leandro.pinto@ejemplo.com",
+          "phone_number": "3415550152",
+          "org": "Pinto Metalurgica",
+          "job_title": "Encargado de planta",
+          "opt_in": "yes",
+          "created": "31/02/2026"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "record_id": 4430,
+          "full_name": "Maria Jose Alvez",
+          "email_address": "maria.jose.alvez@ejemplo.com",
+          "phone_number": "3415550175",
+          "org": "Alvez Indumentaria",
+          "job_title": "Gerenta comercial",
+          "opt_in": "yes",
+          "created": "03/03/2026"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Fuente C (Planilla)": [
+      {
+        "json": {
+          "Nombre y Apellido": "Ana Ferreyra",
+          "Correo": "ANA.FERREYRA@EJEMPLO.COM",
+          "Teléfono": "341 555-0198",
+          "Empresa": "Coop. El Molino",
+          "Cargo": "Analista",
+          "Acepta novedades": "Sí",
+          "Fecha": "02-03-2026"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "Nombre y Apellido": "Nicolás Bravo",
+          "Correo": "nicolas.bravo@ejemplo.com",
+          "Teléfono": "3415550118",
+          "Empresa": "Bravo Refrigeración",
+          "Cargo": "Técnico",
+          "Acepta novedades": "Si",
+          "Fecha": "03-03-2026"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "Nombre y Apellido": "Olga Ferrari",
+          "Correo": "olga.ferrari@ejemplo.com",
+          "Teléfono": "",
+          "Empresa": "Ferrari Panadería",
+          "Cargo": "Dueña",
+          "Acepta novedades": "SI",
+          "Fecha": "03-03-2026"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "Nombre y Apellido": "Pablo Rey",
+          "Correo": "pablo.rey@ejemplo.com",
+          "Teléfono": "3415550129",
+          "Empresa": "Rey Seguros",
+          "Cargo": "Productor",
+          "Acepta novedades": "No",
+          "Fecha": "03-03-2026"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "Nombre y Apellido": "Ana Ferreyra",
+          "Correo": "ana.ferreyra@ejemplo.com ",
+          "Teléfono": "341 555-0198",
+          "Empresa": "Cooperativa El Molino",
+          "Cargo": "Analista de sistemas",
+          "Acepta novedades": "Sí",
+          "Fecha": "03-03-2026"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "Nombre y Apellido": "Rocío  Vega",
+          "Correo": "rocio.vega@ejemplo.com",
+          "Teléfono": "3415550183",
+          "Empresa": "Vega Marketing",
+          "Cargo": "Community manager",
+          "Acepta novedades": "sí",
+          "Fecha": ""
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "Nombre y Apellido": "",
+          "Correo": "sergio.luna@ejemplo.com",
+          "Teléfono": "3415550171",
+          "Empresa": "Luna Herrería",
+          "Cargo": "Herrero",
+          "Acepta novedades": "Sí",
+          "Fecha": "03-03-2026"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Ejecución manual": {
+      "main": [
+        [
+          {
+            "node": "Fuente A (Web)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fuente B (CRM)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fuente C (Planilla)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fuente A (Web)": {
+      "main": [
+        []
+      ]
+    },
+    "Fuente B (CRM)": {
+      "main": [
+        []
+      ]
+    },
+    "Fuente C (Planilla)": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "8618e3c2-8ecd-4b64-bb73-428c62a127d8",
+  "meta": {
+    "instanceId": "d6df57fb1ce86d34dcb7fd9e09b4b5e97a2b8650caf961775d3a6fd18ad3cfb4"
+  },
+  "nodeGroups": [],
+  "id": "2GTvG3xCZV1fBeIy",
+  "tags": []
+}

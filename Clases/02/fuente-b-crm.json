@@ -1,0 +1,72 @@
+[
+  {
+    "record_id": 4412,
+    "full_name": "BRUNO  MARTINEZ",
+    "email_address": "bruno.martinez@ejemplo.com ",
+    "phone_number": "3415550143",
+    "org": "Estudio Martinez",
+    "job_title": "Contador publico",
+    "opt_in": "yes",
+    "created": "28/02/2026"
+  },
+  {
+    "record_id": 4415,
+    "full_name": "Hernan Quiroga",
+    "email_address": "hernan.quiroga@ejemplo.com",
+    "phone_number": "3415550189",
+    "org": "Quiroga Campos SA",
+    "job_title": "Administrador",
+    "opt_in": "no",
+    "created": "01/03/2026"
+  },
+  {
+    "record_id": 4418,
+    "full_name": "Ivana Ledesma",
+    "email_address": "ivana.ledesma@ejemplo.com",
+    "phone_number": "3415550107",
+    "org": "Ledesma Servicios",
+    "job_title": "Responsable de compras",
+    "opt_in": "yes",
+    "created": "01/03/2026"
+  },
+  {
+    "record_id": 4421,
+    "full_name": "Jorge  Da Silva",
+    "email_address": "jorge.dasilva@ejemplo.com",
+    "phone_number": "+54 341 555-0166",
+    "org": "Da Silva Transportes",
+    "job_title": "",
+    "opt_in": "YES",
+    "created": "02/03/2026"
+  },
+  {
+    "record_id": 4423,
+    "full_name": "Karina Nunez",
+    "email_address": "karina.nunez@ejemplo.com",
+    "phone_number": "3415550194",
+    "org": "Nunez Diseno",
+    "job_title": "Titular",
+    "opt_in": null,
+    "created": "02/03/2026"
+  },
+  {
+    "record_id": 4427,
+    "full_name": "Leandro Pinto",
+    "email_address": "leandro.pinto@ejemplo.com",
+    "phone_number": "3415550152",
+    "org": "Pinto Metalurgica",
+    "job_title": "Encargado de planta",
+    "opt_in": "yes",
+    "created": "31/02/2026"
+  },
+  {
+    "record_id": 4430,
+    "full_name": "Maria Jose Alvez",
+    "email_address": "maria.jose.alvez@ejemplo.com",
+    "phone_number": "3415550175",
+    "org": "Alvez Indumentaria",
+    "job_title": "Gerenta comercial",
+    "opt_in": "yes",
+    "created": "03/03/2026"
+  }
+]

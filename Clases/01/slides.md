@@ -47,7 +47,7 @@ retomarlas en la diapositiva de criterios.
 <!-- <div v-click class="box">Versionar automatizaciones en Git, como cualquier otro código</div> -->
 <div v-click class="box">Integrar APIs sin nodo dedicado, con manejo de errores y aviso de fallas</div>
 <div v-click class="box">Sumar un modelo de lenguaje donde corresponde, y reconocer cuándo no</div>
-<div v-click class="box">Poner revisión humana donde la confianza no alcanza</div>
+<div v-click class="box">Poner intervención humana dentro de un proceso semi automático</div>
 <div v-click class="box">Tendrán una habilidad clave en el ambiente laboral actual</div>
 <div v-click class="box">Ejemplos prácticos trasladables a ambientes reales</div>
 <!-- <div v-click class="box">Operar una instancia propia y resolver OAuth2 contra servicios reales</div> -->

@@ -1,0 +1,74 @@
+{
+  "descripcion": "Forma única a la que tienen que llegar los registros de las tres fuentes.",
+  "clave_natural": "email",
+  "campos": {
+    "email": {
+      "tipo": "string",
+      "obligatorio": true,
+      "normalizacion": "recortar espacios, pasar a minúsculas",
+      "validacion": "tiene que contener una arroba y un punto después de la arroba"
+    },
+    "nombre": {
+      "tipo": "string",
+      "obligatorio": true,
+      "normalizacion": "recortar espacios, colapsar espacios dobles, capitalizar"
+    },
+    "apellido": {
+      "tipo": "string",
+      "obligatorio": true,
+      "normalizacion": "recortar espacios, colapsar espacios dobles, capitalizar"
+    },
+    "telefono": {
+      "tipo": "string | null",
+      "obligatorio": false,
+      "normalizacion": "dejar solo dígitos y anteponer +54; vacío se convierte en null"
+    },
+    "organizacion": {
+      "tipo": "string | null",
+      "obligatorio": false
+    },
+    "cargo": {
+      "tipo": "string | null",
+      "obligatorio": false,
+      "normalizacion": "cadena vacía se convierte en null"
+    },
+    "consentimiento": {
+      "tipo": "boolean",
+      "obligatorio": true,
+      "normalizacion": "true / \"yes\" / \"YES\" / \"Sí\" / \"Si\" / \"SI\" / \"sí\" son verdadero; false / \"no\" son falso; ausente o nulo no es verdadero"
+    },
+    "fecha_alta": {
+      "tipo": "string",
+      "obligatorio": true,
+      "formato": "AAAA-MM-DD",
+      "normalizacion": "fecha vacía se completa con la fecha de ejecución; fecha inexistente en el calendario es un registro inválido"
+    },
+    "origen": {
+      "tipo": "string",
+      "obligatorio": true,
+      "valores": ["web", "crm", "evento"]
+    }
+  },
+  "ejemplo": {
+    "email": "ana.ferreyra@ejemplo.com",
+    "nombre": "Ana",
+    "apellido": "Ferreyra",
+    "telefono": "+543415550198",
+    "organizacion": "Cooperativa El Molino",
+    "cargo": "Analista de sistemas",
+    "consentimiento": true,
+    "fecha_alta": "2026-03-02",
+    "origen": "web"
+  },
+  "reglas_de_union": {
+    "deduplicacion": "por email normalizado",
+    "prioridad_de_campos": "web gana sobre crm, y crm gana sobre evento; dentro de esa prioridad, se toma el primer valor no vacío",
+    "fecha_alta": "se conserva siempre la más antigua entre los duplicados",
+    "origen": "el de la fuente de mayor prioridad que aportó el registro"
+  },
+  "salidas_esperadas": {
+    "padron": "contactos únicos, válidos y con consentimiento verdadero",
+    "sin_consentimiento": "registros válidos donde el consentimiento es falso",
+    "cuarentena": "registros que no pasan la validación, con el motivo y el registro original adjunto"
+  }
+}

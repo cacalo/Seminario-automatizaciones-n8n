@@ -1,0 +1,795 @@
+{
+  "name": "Clase 2 - Unificar el padron",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "0972e36b-662d-4e97-8b9b-ef4563f1ef65",
+      "name": "Disparador manual",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://SERVICIOS-CATEDRA/padron/fuente-a-formulario-web.json",
+        "options": {}
+      },
+      "id": "a56fb4b4-b825-43ca-90f1-48d17edab8f7",
+      "name": "Fuente web",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -100,
+        60
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://SERVICIOS-CATEDRA/padron/fuente-b-crm.json",
+        "options": {}
+      },
+      "id": "885499f8-b6c9-485e-82c0-fe0ed3d3ac25",
+      "name": "Fuente CRM",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -100,
+        300
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://SERVICIOS-CATEDRA/padron/fuente-c-planilla-evento.json",
+        "options": {}
+      },
+      "id": "d1b45334-f39d-4c2d-9963-b4a122219640",
+      "name": "Fuente planilla",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -100,
+        540
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "submissions",
+        "options": {}
+      },
+      "id": "bad3cab8-debf-437f-a099-a343080f7d54",
+      "name": "Separar inscripciones",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        140,
+        60
+      ],
+      "notes": "La fuente web devuelve un objeto. Las otras dos ya vienen como array.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8423ff8c-7dfa-4612-8670-3deb17b3245f",
+              "name": "_origen",
+              "value": "web",
+              "type": "string"
+            },
+            {
+              "id": "2d636897-48cf-4661-aa4a-2a5288e466b2",
+              "name": "_id_origen",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "d3a60d87-260a-4944-85ff-0b421ae3677a",
+              "name": "_email",
+              "value": "={{ $json.contact.email ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "e3dab1ca-0b8c-4857-9ab8-78cc194d96b0",
+              "name": "_nombre",
+              "value": "={{ $json.contact.firstName ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "a45162f1-3e6f-4572-a7e5-967e83def079",
+              "name": "_apellido",
+              "value": "={{ $json.contact.lastName ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "fde1f676-18d7-44d7-9cc8-f63307dbc341",
+              "name": "_nombre_completo",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "11692a73-11aa-44b2-8650-a5391ddc103b",
+              "name": "_telefono",
+              "value": "={{ $json.contact.phone ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "2127147e-ca4d-4452-838f-9743df6d311c",
+              "name": "_org",
+              "value": "={{ $json.answers.company ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "42163668-8bea-4020-a101-0cc36f08297b",
+              "name": "_cargo",
+              "value": "={{ $json.answers.role ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "02ed32dd-a55f-480c-99df-cb5f4019e441",
+              "name": "_consentimiento",
+              "value": "={{ $json.answers.consent === null || $json.answers.consent === undefined ? '' : String($json.answers.consent) }}",
+              "type": "string"
+            },
+            {
+              "id": "6295d91b-6d4c-4545-882d-b779619056c0",
+              "name": "_fecha",
+              "value": "={{ $json.submittedAt ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "65a4cc7e-3bb2-4d74-acc6-0c2327b74b47",
+              "name": "_formato_fecha",
+              "value": "iso",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "options": {}
+      },
+      "id": "787883c3-ce64-4098-bed4-474d5b42288d",
+      "name": "Mapear rama web",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        380,
+        60
+      ],
+      "notes": "La tabla de mapeo, columna 1."
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bac7eb42-4803-4502-a352-e3e932edc34a",
+              "name": "_origen",
+              "value": "crm",
+              "type": "string"
+            },
+            {
+              "id": "c2486d0a-cbe8-4e39-bf32-8b4384efec88",
+              "name": "_id_origen",
+              "value": "={{ String($json.record_id) }}",
+              "type": "string"
+            },
+            {
+              "id": "04132842-4aa7-47f4-91c3-ce17b3ec5490",
+              "name": "_email",
+              "value": "={{ $json.email_address ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "0d95d76f-24ec-4d6e-9956-178b82400e26",
+              "name": "_nombre",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "bb1d4911-3f8d-40ea-b6b9-340652b27ad1",
+              "name": "_apellido",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "d458e011-fc69-492b-833c-ee56aa02ce81",
+              "name": "_nombre_completo",
+              "value": "={{ $json.full_name ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "1a6f15e1-7599-42a0-a934-4b6bc605ae50",
+              "name": "_telefono",
+              "value": "={{ $json.phone_number ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "4854ec77-23bc-41d4-b24e-5e9c406f9607",
+              "name": "_org",
+              "value": "={{ $json.org ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "836601fd-7d75-4f7a-b23e-1aa675f93500",
+              "name": "_cargo",
+              "value": "={{ $json.job_title ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "b2dba406-ec9a-4677-9dc8-b0cfa373f7c9",
+              "name": "_consentimiento",
+              "value": "={{ $json.opt_in === null || $json.opt_in === undefined ? '' : String($json.opt_in) }}",
+              "type": "string"
+            },
+            {
+              "id": "7ad9d128-8702-4314-8552-dcd940a83165",
+              "name": "_fecha",
+              "value": "={{ $json.created ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "b73b28bb-e18a-4e76-85d3-32d246b2b353",
+              "name": "_formato_fecha",
+              "value": "dmy",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "options": {}
+      },
+      "id": "ebf8375c-2f21-460d-87a7-b8c19cff01ad",
+      "name": "Mapear rama CRM",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        380,
+        300
+      ],
+      "notes": "La tabla de mapeo, columna 2."
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "539d4fc7-01ef-4854-b2c9-c5610116f72b",
+              "name": "_origen",
+              "value": "evento",
+              "type": "string"
+            },
+            {
+              "id": "40e6ecbf-919f-4c3e-91d0-549acbcc5043",
+              "name": "_id_origen",
+              "value": "={{ 'evento:' + ($json['Correo'] ?? '') }}",
+              "type": "string"
+            },
+            {
+              "id": "826b0745-90e5-4466-b7ca-ca0a2a443e57",
+              "name": "_email",
+              "value": "={{ $json['Correo'] ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "f6cbe130-c8ee-4cb2-a10b-214afe933ceb",
+              "name": "_nombre",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "b6eb056a-a493-4cd3-8556-f8a8eec78e72",
+              "name": "_apellido",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "bae5ec05-ad5a-424d-84d2-d1d9cbfd677e",
+              "name": "_nombre_completo",
+              "value": "={{ $json['Nombre y Apellido'] ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "e6d737a2-7c63-40ec-b64b-b925a32642c8",
+              "name": "_telefono",
+              "value": "={{ $json['Teléfono'] ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "3e3061c2-b54f-4443-a771-2e4e6b6250b8",
+              "name": "_org",
+              "value": "={{ $json['Empresa'] ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "4e9b4bd2-6111-4eca-adc5-df5c6eabe9b0",
+              "name": "_cargo",
+              "value": "={{ $json['Cargo'] ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "406c828a-31d5-4d04-b787-d0ad0645443a",
+              "name": "_consentimiento",
+              "value": "={{ $json['Acepta novedades'] ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "01b8fee6-f363-4640-8970-18bdac81d6a4",
+              "name": "_fecha",
+              "value": "={{ $json['Fecha'] ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "8558be3e-3672-4ed6-a3e5-828ff9a923ed",
+              "name": "_formato_fecha",
+              "value": "dmy",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "options": {}
+      },
+      "id": "24e1f6a1-677b-44c4-8dc7-46ab2e98d1a2",
+      "name": "Mapear rama planilla",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        380,
+        540
+      ],
+      "notes": "Claves con espacios y acentos: notacion con corchetes, obligatoria.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "mode": "append",
+        "numberOfInputs": 3,
+        "options": {}
+      },
+      "id": "2c440e03-7812-4d54-aa73-b68a16a2e06f",
+      "name": "Unir fuentes",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        640,
+        300
+      ],
+      "notes": "numberOfInputs en 3. Si queda en 2, la tercera fuente se pierde sin avisar.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Normaliza los tres origenes al esquema comun, valida y clasifica.\n// Un solo lugar con las reglas: los nodos Set de arriba solo renombran.\n\n// --- Decision de diseno abierta -------------------------------------------\n// El esquema dice que \"nombre\" es obligatorio. Con false, un registro sin\n// nombre igual entra al padron porque la clave natural es el correo.\n// Ponelo en true y el padron pasa de 12 a 11, y la cuarentena de 4 a 5.\nconst NOMBRE_OBLIGATORIO = false;\n// --------------------------------------------------------------------------\n\nconst VERDADEROS = ['true', 'yes', 'si', 's', '1'];\nconst PARTICULAS = ['da', 'de', 'del', 'la', 'las', 'los', 'van', 'von', 'di', 'san', 'santa', 'mac', 'mc'];\nconst HOY = new Date().toISOString().slice(0, 10);\n\nfunction limpiar(t) {\n  return (t === null || t === undefined ? '' : String(t)).trim().replace(/\\s+/g, ' ');\n}\n\nfunction capitalizar(t) {\n  return limpiar(t)\n    .split(' ')\n    .filter(Boolean)\n    .map((p) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase())\n    .join(' ');\n}\n\nfunction normalizarEmail(t) {\n  return limpiar(t).toLowerCase();\n}\n\nfunction emailValido(e) {\n  return /^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(e);\n}\n\nfunction normalizarTelefono(t) {\n  let d = (t === null || t === undefined ? '' : String(t)).replace(/\\D/g, '');\n  if (!d) return null;\n  if (d.startsWith('54')) d = d.slice(2);\n  if (d.startsWith('0')) d = d.slice(1);\n  if (d.startsWith('9')) d = d.slice(1);\n  // 341 15 555 0121 -> el 15 sobra cuando ya sacamos el 0 inicial\n  if (d.length === 12 && d.slice(3, 5) === '15') d = d.slice(0, 3) + d.slice(5);\n  return '+54' + d;\n}\n\nfunction partirNombre(completo) {\n  const partes = limpiar(completo).split(' ').filter(Boolean);\n  if (partes.length === 0) return { nombre: '', apellido: '' };\n  if (partes.length === 1) return { nombre: partes[0], apellido: '' };\n  // Regla declarada: el apellido es la ultima palabra, salvo que la anterior\n  // sea una particula. Asi \"Jorge Da Silva\" no se parte mal.\n  const anteUltima = partes[partes.length - 2].toLowerCase();\n  const corte = PARTICULAS.includes(anteUltima) ? partes.length - 2 : partes.length - 1;\n  return {\n    nombre: partes.slice(0, corte).join(' '),\n    apellido: partes.slice(corte).join(' '),\n  };\n}\n\nfunction normalizarConsentimiento(v) {\n  // Tres estados, no dos: si, no, y \"nunca me lo dijeron\".\n  if (v === null || v === undefined || v === '') return { valor: false, declarado: false };\n  if (typeof v === 'boolean') return { valor: v, declarado: true };\n  // Sin acentos, para que \"Si\", \"SI\", \"si\" y \"si\" con tilde sean el mismo valor.\n  const t = String(v)\n    .trim()\n    .toLowerCase()\n    .normalize('NFD')\n    .replace(/[\\u0300-\\u036f]/g, '');\n  return { valor: VERDADEROS.includes(t), declarado: true };\n}\n\nfunction existeEnElCalendario(f) {\n  const m = /^(\\d{4})-(\\d{2})-(\\d{2})$/.exec(f);\n  if (!m) return false;\n  const anio = Number(m[1]);\n  const mes = Number(m[2]);\n  const dia = Number(m[3]);\n  const d = new Date(Date.UTC(anio, mes - 1, dia));\n  return (\n    d.getUTCFullYear() === anio && d.getUTCMonth() === mes - 1 && d.getUTCDate() === dia\n  );\n}\n\nfunction normalizarFecha(valor, formato) {\n  const v = limpiar(valor);\n  if (!v) return { fecha: HOY, ok: true }; // fecha vacia: la completa el flujo\n  let candidata = null;\n  if (formato === 'iso') {\n    candidata = v.slice(0, 10);\n  } else {\n    const m = /^(\\d{1,2})[\\/\\-](\\d{1,2})[\\/\\-](\\d{4})$/.exec(v);\n    if (m) {\n      candidata = m[3] + '-' + m[2].padStart(2, '0') + '-' + m[1].padStart(2, '0');\n    }\n  }\n  if (!candidata || !existeEnElCalendario(candidata)) return { fecha: null, ok: false };\n  return { fecha: candidata, ok: true };\n}\n\nconst salida = [];\n\nfor (const item of $input.all()) {\n  const bruto = item.json;\n\n  const email = normalizarEmail(bruto._email);\n\n  let nombre = capitalizar(bruto._nombre || '');\n  let apellido = capitalizar(bruto._apellido || '');\n  if (!nombre && !apellido) {\n    const partido = partirNombre(bruto._nombre_completo || '');\n    nombre = capitalizar(partido.nombre);\n    apellido = capitalizar(partido.apellido);\n  }\n\n  const consentimiento = normalizarConsentimiento(bruto._consentimiento);\n  const fecha = normalizarFecha(bruto._fecha, bruto._formato_fecha);\n\n  const registro = {\n    email,\n    nombre: nombre || null,\n    apellido: apellido || null,\n    telefono: normalizarTelefono(bruto._telefono),\n    organizacion: limpiar(bruto._org) || null,\n    cargo: limpiar(bruto._cargo) || null,\n    consentimiento: consentimiento.valor,\n    fecha_alta: fecha.fecha,\n    origen: bruto._origen,\n    _id_origen: bruto._id_origen,\n  };\n\n  // Validaciones, en orden. El primer motivo que aparece es el que se guarda.\n  let motivo = null;\n  if (!email) motivo = 'email_ausente';\n  else if (!emailValido(email)) motivo = 'email_invalido';\n  else if (!fecha.ok) motivo = 'fecha_invalida';\n  else if (!consentimiento.declarado) motivo = 'consentimiento_ausente';\n  else if (NOMBRE_OBLIGATORIO && !nombre) motivo = 'nombre_ausente';\n\n  if (motivo) {\n    salida.push({ json: { ...registro, _salida: 'cuarentena', _motivo: motivo, _original: bruto } });\n  } else if (!consentimiento.valor) {\n    salida.push({ json: { ...registro, _salida: 'sin_consentimiento', _motivo: 'consentimiento_negativo' } });\n  } else {\n    salida.push({ json: { ...registro, _salida: 'padron', _motivo: null } });\n  }\n}\n\nreturn salida;\n"
+      },
+      "id": "a0fc8f29-a524-4ebc-ae0b-a4413c35c58b",
+      "name": "Normalizar y validar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        300
+      ],
+      "notes": "Todas las reglas de normalizacion viven aca, en un solo lugar."
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "01281e4a-6b9f-40d9-9d01-a1070b5cec01",
+                    "leftValue": "={{ $json._salida }}",
+                    "rightValue": "padron",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "padron"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "cffc119f-454a-4097-b23d-2e5e9911d298",
+                    "leftValue": "={{ $json._salida }}",
+                    "rightValue": "cuarentena",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "cuarentena"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5325e93d-e6db-406a-b8e5-f87b499092b8",
+                    "leftValue": "={{ $json._salida }}",
+                    "rightValue": "sin_consentimiento",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "sin consentimiento"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "inesperado"
+        }
+      },
+      "id": "2e562f38-dad4-415b-bd46-0febecee6636",
+      "name": "Repartir salidas",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        1120,
+        300
+      ],
+      "notes": "La salida por defecto no es opcional: sin ella los casos raros desaparecen.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Fusiona los duplicados por correo. No es \"quedarse con uno\": es combinar.\n\nconst PRIORIDAD = { web: 3, crm: 2, evento: 1 };\nconst CAMPOS = ['nombre', 'apellido', 'telefono', 'organizacion', 'cargo'];\n\nconst porEmail = new Map();\n\nfor (const item of $input.all()) {\n  const actual = item.json;\n  const previo = porEmail.get(actual.email);\n\n  if (!previo) {\n    porEmail.set(actual.email, { ...actual, _fuentes: [actual.origen] });\n    continue;\n  }\n\n  // Gana la fuente de mayor prioridad como base del registro.\n  const actualGana = PRIORIDAD[actual.origen] > PRIORIDAD[previo.origen];\n  const base = { ...(actualGana ? actual : previo) };\n  const otro = actualGana ? previo : actual;\n\n  // Los huecos de la base se rellenan con lo que aporte la otra fuente.\n  for (const campo of CAMPOS) {\n    if (base[campo] === null || base[campo] === undefined || base[campo] === '') {\n      base[campo] = otro[campo];\n    }\n  }\n\n  // La fecha de alta es siempre la mas antigua de las dos.\n  base.fecha_alta = [previo.fecha_alta, actual.fecha_alta].filter(Boolean).sort()[0];\n\n  const fuentesPrevias = previo._fuentes || [previo.origen];\n  base._fuentes = Array.from(new Set([...fuentesPrevias, actual.origen]));\n\n  porEmail.set(actual.email, base);\n}\n\nreturn Array.from(porEmail.values()).map((json) => ({ json }));\n"
+      },
+      "id": "8f1e3aa2-0a58-4a01-8512-a678940b36de",
+      "name": "Fusionar duplicados",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1380,
+        120
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "f5413fa3-4f5d-443b-ad6b-9b5ed053ea30",
+      "name": "Padron",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1620,
+        120
+      ],
+      "notes": "12 contactos unicos.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "00222efc-134f-4517-a324-89806d73d763",
+      "name": "Cuarentena",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1380,
+        320
+      ],
+      "notes": "4 registros, cada uno con su motivo.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "b26abfa4-bc4d-4ddf-97e9-38f9e9787cf7",
+      "name": "Sin consentimiento",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1380,
+        480
+      ],
+      "notes": "3 registros. Dato correcto, respuesta negativa.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "id": "f5095fe9-f127-41f2-ae3e-9f1d87132c0c",
+      "name": "Inesperado",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1380,
+        640
+      ],
+      "notes": "Tiene que quedar vacio. Si trae algo, falta una regla.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// La verificacion del ejercicio: la cuenta tiene que cerrar.\n\nconst clasificados = $('Normalizar y validar').all().map((i) => i.json);\nconst padron = $('Fusionar duplicados').all().map((i) => i.json);\n\nconst contar = (salida) => clasificados.filter((r) => r._salida === salida).length;\n\nconst entradas = clasificados.length;\nconst enPadron = padron.length;\nconst cuarentena = contar('cuarentena');\nconst sinConsentimiento = contar('sin_consentimiento');\nconst duplicadosAbsorbidos = contar('padron') - enPadron;\n\nconst suma = enPadron + cuarentena + sinConsentimiento + duplicadosAbsorbidos;\n\nconst motivos = {};\nfor (const r of clasificados) {\n  if (r._salida !== 'cuarentena') continue;\n  motivos[r._motivo] = (motivos[r._motivo] || 0) + 1;\n}\n\nreturn [\n  {\n    json: {\n      entradas,\n      padron: enPadron,\n      cuarentena,\n      sin_consentimiento: sinConsentimiento,\n      duplicados_absorbidos: duplicadosAbsorbidos,\n      suma_de_salidas: suma,\n      cierra: suma === entradas,\n      motivos_de_cuarentena: motivos,\n    },\n  },\n];\n"
+      },
+      "id": "9c75bb25-ba54-4d3b-b7bd-0ad3a46991c7",
+      "name": "Resumen",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1860,
+        120
+      ],
+      "notes": "cierra: true es la unica prueba de que no se perdio nada."
+    },
+    {
+      "parameters": {
+        "content": "## Practica clase 2\n\nTres fuentes con estructuras distintas, un padron unico.\n\n**Antes de ejecutar:** reemplazar `SERVICIOS-CATEDRA` en los tres nodos de fuente.\n\n**Resultado esperado**\n\n| Salida | Cantidad |\n| --- | --- |\n| Padron | 12 |\n| Cuarentena | 4 |\n| Sin consentimiento | 3 |\n| Duplicados absorbidos | 3 |\n\n22 entradas, 22 registros contabilizados.",
+        "width": 520,
+        "height": 340,
+        "color": 4
+      },
+      "id": "73d394f1-742c-47e7-ad0f-a8e700faa18c",
+      "name": "Nota e826",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -360,
+        -140
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### Por que Set y despues Code\n\nLos tres nodos Set **solo renombran**: son la tabla de mapeo hecha nodo.\n\nEl nodo Code **normaliza y valida**, con las reglas escritas una sola vez.\n\nSi la regla del telefono cambia, se toca un lugar y no tres.",
+        "width": 440,
+        "height": 220,
+        "color": 5
+      },
+      "id": "473adf72-9c3e-407f-8ee2-d416eb8b1a8d",
+      "name": "Nota 0b70",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        340,
+        -180
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### La decision abierta\n\nDentro de **Normalizar y validar** hay una constante `NOMBRE_OBLIGATORIO`.\n\nEsta en `false`: un registro sin nombre entra igual, porque la clave del padron es el correo.\n\nEn `true` el padron pasa a 11 y la cuarentena a 5. Las dos son defendibles. Lo que no se puede es dejarlo sin decidir.",
+        "width": 440,
+        "height": 260,
+        "color": 3
+      },
+      "id": "5fe71978-bd70-439f-a7f1-73d67b045a40",
+      "name": "Nota b5ec",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        840,
+        -220
+      ]
+    }
+  ],
+  "connections": {
+    "Disparador manual": {
+      "main": [
+        [
+          {
+            "node": "Fuente web",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fuente CRM",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fuente planilla",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fuente web": {
+      "main": [
+        [
+          {
+            "node": "Separar inscripciones",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Separar inscripciones": {
+      "main": [
+        [
+          {
+            "node": "Mapear rama web",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fuente CRM": {
+      "main": [
+        [
+          {
+            "node": "Mapear rama CRM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fuente planilla": {
+      "main": [
+        [
+          {
+            "node": "Mapear rama planilla",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mapear rama web": {
+      "main": [
+        [
+          {
+            "node": "Unir fuentes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mapear rama CRM": {
+      "main": [
+        [
+          {
+            "node": "Unir fuentes",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Mapear rama planilla": {
+      "main": [
+        [
+          {
+            "node": "Unir fuentes",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Unir fuentes": {
+      "main": [
+        [
+          {
+            "node": "Normalizar y validar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar y validar": {
+      "main": [
+        [
+          {
+            "node": "Repartir salidas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Repartir salidas": {
+      "main": [
+        [
+          {
+            "node": "Fusionar duplicados",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Cuarentena",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sin consentimiento",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Inesperado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fusionar duplicados": {
+      "main": [
+        [
+          {
+            "node": "Padron",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Padron": {
+      "main": [
+        [
+          {
+            "node": "Resumen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

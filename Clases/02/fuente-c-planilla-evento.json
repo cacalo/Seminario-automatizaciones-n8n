@@ -1,0 +1,65 @@
+[
+  {
+    "Nombre y Apellido": "Ana Ferreyra",
+    "Correo": "ANA.FERREYRA@EJEMPLO.COM",
+    "Teléfono": "341 555-0198",
+    "Empresa": "Coop. El Molino",
+    "Cargo": "Analista",
+    "Acepta novedades": "Sí",
+    "Fecha": "02-03-2026"
+  },
+  {
+    "Nombre y Apellido": "Nicolás Bravo",
+    "Correo": "nicolas.bravo@ejemplo.com",
+    "Teléfono": "3415550118",
+    "Empresa": "Bravo Refrigeración",
+    "Cargo": "Técnico",
+    "Acepta novedades": "Si",
+    "Fecha": "03-03-2026"
+  },
+  {
+    "Nombre y Apellido": "Olga Ferrari",
+    "Correo": "olga.ferrari@ejemplo.com",
+    "Teléfono": "",
+    "Empresa": "Ferrari Panadería",
+    "Cargo": "Dueña",
+    "Acepta novedades": "SI",
+    "Fecha": "03-03-2026"
+  },
+  {
+    "Nombre y Apellido": "Pablo Rey",
+    "Correo": "pablo.rey@ejemplo.com",
+    "Teléfono": "3415550129",
+    "Empresa": "Rey Seguros",
+    "Cargo": "Productor",
+    "Acepta novedades": "No",
+    "Fecha": "03-03-2026"
+  },
+  {
+    "Nombre y Apellido": "Ana Ferreyra",
+    "Correo": "ana.ferreyra@ejemplo.com ",
+    "Teléfono": "341 555-0198",
+    "Empresa": "Cooperativa El Molino",
+    "Cargo": "Analista de sistemas",
+    "Acepta novedades": "Sí",
+    "Fecha": "03-03-2026"
+  },
+  {
+    "Nombre y Apellido": "Rocío  Vega",
+    "Correo": "rocio.vega@ejemplo.com",
+    "Teléfono": "3415550183",
+    "Empresa": "Vega Marketing",
+    "Cargo": "Community manager",
+    "Acepta novedades": "sí",
+    "Fecha": ""
+  },
+  {
+    "Nombre y Apellido": "",
+    "Correo": "sergio.luna@ejemplo.com",
+    "Teléfono": "3415550171",
+    "Empresa": "Luna Herrería",
+    "Cargo": "Herrero",
+    "Acepta novedades": "Sí",
+    "Fecha": "03-03-2026"
+  }
+]
