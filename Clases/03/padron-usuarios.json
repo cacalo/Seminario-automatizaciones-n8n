@@ -1,0 +1,44 @@
+[
+  {
+    "user_id": "usr_0031",
+    "email": "ana.ferreyra@ejemplo.com",
+    "nombre": "Ana Ferreyra",
+    "documento": "30111222",
+    "estado": "activo"
+  },
+  {
+    "user_id": "usr_0044",
+    "email": "bruno.martinez@ejemplo.com",
+    "nombre": "Bruno Martinez",
+    "documento": "27884411",
+    "estado": "activo"
+  },
+  {
+    "user_id": "usr_0052",
+    "email": "carla.ojeda@ejemplo.com",
+    "nombre": "Carla Ojeda",
+    "documento": "33902155",
+    "estado": "suspendido"
+  },
+  {
+    "user_id": "usr_0067",
+    "email": "diego.sosa@ejemplo.com",
+    "nombre": "Diego Sosa",
+    "documento": "29455801",
+    "estado": "activo"
+  },
+  {
+    "user_id": "usr_0071",
+    "email": "elena.ruiz@ejemplo.com",
+    "nombre": "Elena Ruiz",
+    "documento": "31776004",
+    "estado": "activo"
+  },
+  {
+    "user_id": "usr_0088",
+    "email": "facundo.ibarra@ejemplo.com",
+    "nombre": "Facundo Ibarra",
+    "documento": "40218933",
+    "estado": "activo"
+  }
+]

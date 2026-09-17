@@ -166,6 +166,14 @@ html.dark {
   display: none !important;
 }
 
+/* El diálogo "ir a" se cierra moviéndose fuera de pantalla (.-top-20).
+   Con muchas slides la lista es más alta que ese desplazamiento y queda
+   colgando sobre la diapositiva. Lo ocultamos del todo mientras esté
+   cerrado. */
+#slidev-goto-dialog.-top-20 {
+  visibility: hidden;
+}
+
 /* Íconos de marca en "Cinco enfoques": mismo tamaño y color mute,
    coherentes con el resto de las etiquetas secundarias del deck. */
 .tool-icon {

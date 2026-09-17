@@ -1,0 +1,597 @@
+{
+  "name": "Clase 3 - Template",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "clase-3-precompletado",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1472,
+        880
+      ],
+      "id": "41c627cd-a95a-4fb5-8a81-5f7814bde0f3",
+      "name": "Webhook",
+      "webhookId": "00a72f67-3da0-4c11-b69e-10ca9f77e032"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    \"user_id\": \"usr_0031\",\n    \"email\": \"ana.ferreyra@ejemplo.com\",\n    \"nombre\": \"Ana Ferreyra\",\n    \"documento\": \"30111222\",\n    \"estado\": \"activo\"\n  },\n  {\n    \"user_id\": \"usr_0044\",\n    \"email\": \"bruno.martinez@ejemplo.com\",\n    \"nombre\": \"Bruno Martinez\",\n    \"documento\": \"27884411\",\n    \"estado\": \"activo\"\n  },\n  {\n    \"user_id\": \"usr_0052\",\n    \"email\": \"carla.ojeda@ejemplo.com\",\n    \"nombre\": \"Carla Ojeda\",\n    \"documento\": \"33902155\",\n    \"estado\": \"suspendido\"\n  },\n  {\n    \"user_id\": \"usr_0067\",\n    \"email\": \"diego.sosa@ejemplo.com\",\n    \"nombre\": \"Diego Sosa\",\n    \"documento\": \"29455801\",\n    \"estado\": \"activo\"\n  },\n  {\n    \"user_id\": \"usr_0071\",\n    \"email\": \"elena.ruiz@ejemplo.com\",\n    \"nombre\": \"Elena Ruiz\",\n    \"documento\": \"31776004\",\n    \"estado\": \"activo\"\n  },\n  {\n    \"user_id\": \"usr_0088\",\n    \"email\": \"facundo.ibarra@ejemplo.com\",\n    \"nombre\": \"Facundo Ibarra\",\n    \"documento\": \"40218933\",\n    \"estado\": \"activo\"\n  }\n]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -704,
+        480
+      ],
+      "id": "546b0a8a-9d65-48bb-8fda-510086c50d33",
+      "name": "Padrón usuarios"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    \"plan_code\": \"SEM-BAS\",\n    \"nombre\": \"Acceso básico\",\n    \"precio_ars\": 12000,\n    \"duracion_dias\": 30,\n    \"contenidos\": [\"c-101\", \"c-102\"]\n  },\n  {\n    \"plan_code\": \"SEM-PRO\",\n    \"nombre\": \"Acceso profesional\",\n    \"precio_ars\": 24500,\n    \"duracion_dias\": 90,\n    \"contenidos\": [\"c-101\", \"c-102\", \"c-201\", \"c-202\"]\n  },\n  {\n    \"plan_code\": \"SEM-FULL\",\n    \"nombre\": \"Acceso completo\",\n    \"precio_ars\": 48000,\n    \"duracion_dias\": 365,\n    \"contenidos\": [\"c-101\", \"c-102\", \"c-201\", \"c-202\", \"c-301\"]\n  }\n]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -912,
+        480
+      ],
+      "id": "c5705d0e-6331-411c-b1ca-256d327d42be",
+      "name": "Catálogo planes"
+    },
+    {
+      "parameters": {
+        "content": "## Practica clase 3\n\nUn cobro entra por webhook y otorga un acceso.\n\n**Resultado esperado:** 3 accesos otorgados, 6 a revision, 2 registrados sin otorgar, un 400 y un 401.",
+        "height": 184,
+        "width": 464,
+        "color": 4
+      },
+      "id": "36e4d669-b84f-4f99-adac-cd4da41b565c",
+      "name": "Nota c25b",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1456,
+        624
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### La puerta\n\nLas tres verificaciones van **antes** de cualquier consulta a otro sistema.\n\nNo tiene sentido ir a buscar un usuario para un evento que no vamos a procesar.",
+        "height": 184,
+        "width": 420,
+        "color": 5
+      },
+      "id": "e46b1697-f3bf-4891-a37d-bcae17bd98ff",
+      "name": "Nota 89a1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -976,
+        624
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### El secreto compartido\n\n`x-webhook-secret: s3m1n4r10-auto-2026`",
+        "height": 188,
+        "width": 420,
+        "color": 3
+      },
+      "id": "df9384e0-ee71-4f95-b434-48510fc62d86",
+      "name": "Nota 47df",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -528,
+        624
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### El caso abierto\n\nEn **Plan e importe correctos** la comparacion es `===`.\n\nCon `>=`, el evento que paga de mas (`pay_9013`) otorgaria acceso y los otorgados pasan de 3 a 4.\n\nNinguna de las dos es obviamente correcta.",
+        "height": 212,
+        "width": 440,
+        "color": 3
+      },
+      "id": "6c5ff131-7de4-46fb-914d-2ff5292884e5",
+      "name": "Nota 4da2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1232,
+        496
+      ]
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "x-webhook-secret": "s3m1n4r10-auto-2026"
+          },
+          "body": {
+            "id": "evt_2001",
+            "type": "payment.succeeded",
+            "created_at": "2026-03-10T12:00:03Z",
+            "data": {
+              "payment_id": "pay_9001",
+              "status": "approved",
+              "amount": 24500,
+              "currency": "ARS",
+              "payer": {
+                "email": "ana.ferreyra@ejemplo.com",
+                "document": "30111222"
+              },
+              "metadata": {
+                "plan_code": "SEM-PRO",
+                "order_ref": "ord_8891"
+              }
+            }
+          }
+        }
+      },
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "x-webhook-secret": "s3m1n4r10-auto-2026"
+          },
+          "body": {
+            "id": "evt_2002",
+            "type": "payment.succeeded",
+            "created_at": "2026-03-10T12:04:47Z",
+            "data": {
+              "payment_id": "pay_9002",
+              "status": "approved",
+              "amount": 12000,
+              "currency": "ARS",
+              "payer": {
+                "email": "bruno.martinez@ejemplo.com",
+                "document": "27884411"
+              },
+              "metadata": {
+                "plan_code": "SEM-BAS",
+                "order_ref": "ord_8892"
+              }
+            }
+          }
+        }
+      },
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "x-webhook-secret": "s3m1n4r10-auto-2026"
+          },
+          "body": {
+            "id": "evt_2003",
+            "type": "payment.failed",
+            "created_at": "2026-03-10T12:09:12Z",
+            "data": {
+              "payment_id": "pay_9003",
+              "status": "rejected",
+              "amount": 24500,
+              "currency": "ARS",
+              "decline_reason": "insufficient_funds",
+              "payer": {
+                "email": "diego.sosa@ejemplo.com",
+                "document": "29455801"
+              },
+              "metadata": {
+                "plan_code": "SEM-PRO",
+                "order_ref": "ord_8893"
+              }
+            }
+          }
+        }
+      },
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "x-webhook-secret": "s3m1n4r10-auto-2026"
+          },
+          "body": {
+            "id": "evt_2004",
+            "type": "payment.pending",
+            "created_at": "2026-03-10T12:15:38Z",
+            "data": {
+              "payment_id": "pay_9004",
+              "status": "pending",
+              "amount": 12000,
+              "currency": "ARS",
+              "payer": {
+                "email": "facundo.ibarra@ejemplo.com",
+                "document": "40218933"
+              },
+              "metadata": {
+                "plan_code": "SEM-BAS",
+                "order_ref": "ord_8894"
+              }
+            }
+          }
+        }
+      },
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "x-webhook-secret": "s3m1n4r10-auto-2026"
+          },
+          "body": {
+            "id": "evt_2005",
+            "type": "payment.succeeded",
+            "created_at": "2026-03-10T12:22:01Z",
+            "data": {
+              "payment_id": "pay_9005",
+              "status": "approved",
+              "amount": 12000,
+              "currency": "ARS",
+              "payer": {
+                "email": "tomas.gil@ejemplo.com",
+                "document": "38221900"
+              },
+              "metadata": {
+                "plan_code": "SEM-BAS",
+                "order_ref": "ord_8895"
+              }
+            }
+          }
+        }
+      },
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "x-webhook-secret": "s3m1n4r10-auto-2026"
+          },
+          "body": {
+            "id": "evt_2006",
+            "type": "payment.succeeded",
+            "created_at": "2026-03-10T12:28:55Z",
+            "data": {
+              "payment_id": "pay_9006",
+              "status": "approved",
+              "amount": 12000,
+              "currency": "ARS",
+              "payer": {
+                "email": "carla.ojeda@ejemplo.com",
+                "document": "33902155"
+              },
+              "metadata": {
+                "plan_code": "SEM-BAS",
+                "order_ref": "ord_8896"
+              }
+            }
+          }
+        }
+      },
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "x-webhook-secret": "s3m1n4r10-auto-2026"
+          },
+          "body": {
+            "id": "evt_2007",
+            "type": "payment.succeeded",
+            "created_at": "2026-03-10T12:35:20Z",
+            "data": {
+              "payment_id": "pay_9007",
+              "status": "approved",
+              "amount": 12000,
+              "currency": "ARS",
+              "payer": {
+                "email": "elena.ruiz@ejemplo.com",
+                "document": "31776004"
+              },
+              "metadata": {
+                "plan_code": "SEM-PRO",
+                "order_ref": "ord_8897"
+              }
+            }
+          }
+        }
+      },
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "x-webhook-secret": "s3m1n4r10-auto-2026"
+          },
+          "body": {
+            "id": "evt_2008",
+            "type": "payment.succeeded",
+            "created_at": "2026-03-10T12:41:09Z",
+            "data": {
+              "payment_id": "pay_9001",
+              "status": "approved",
+              "amount": 24500,
+              "currency": "ARS",
+              "payer": {
+                "email": "ana.ferreyra@ejemplo.com",
+                "document": "30111222"
+              },
+              "metadata": {
+                "plan_code": "SEM-PRO",
+                "order_ref": "ord_8891"
+              }
+            }
+          }
+        }
+      },
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "x-webhook-secret": "s3m1n4r10-auto-2026"
+          },
+          "body": {
+            "id": "evt_2009",
+            "type": "payment.succeeded",
+            "created_at": "2026-03-10T12:47:33Z",
+            "data": {
+              "payment_id": "pay_9009",
+              "status": "approved",
+              "amount": 60000,
+              "currency": "ARS",
+              "payer": {
+                "email": "ana.ferreyra@ejemplo.com",
+                "document": "30111222"
+              },
+              "metadata": {
+                "plan_code": "SEM-GOLD",
+                "order_ref": "ord_8899"
+              }
+            }
+          }
+        }
+      },
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "x-webhook-secret": "s3m1n4r10-auto-2026"
+          },
+          "body": {
+            "id": "evt_2010",
+            "type": "payment.succeeded",
+            "created_at": "2026-03-10T12:53:44Z",
+            "data": {
+              "payment_id": "pay_9010",
+              "status": "approved",
+              "amount": 55,
+              "currency": "USD",
+              "payer": {
+                "email": "facundo.ibarra@ejemplo.com",
+                "document": "40218933"
+              },
+              "metadata": {
+                "plan_code": "SEM-FULL",
+                "order_ref": "ord_8900"
+              }
+            }
+          }
+        }
+      },
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "x-webhook-secret": "s3m1n4r10-auto-2026"
+          },
+          "body": {
+            "id": "evt_2011",
+            "type": "payment.succeeded",
+            "created_at": "2026-03-10T12:58:02Z",
+            "data": {
+              "status": "approved",
+              "amount": 12000,
+              "currency": "ARS",
+              "payer": {
+                "email": "diego.sosa@ejemplo.com",
+                "document": "29455801"
+              },
+              "metadata": {
+                "plan_code": "SEM-BAS",
+                "order_ref": "ord_8901"
+              }
+            }
+          }
+        }
+      },
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "x-webhook-secret": "clave-que-no-es"
+          },
+          "body": {
+            "id": "evt_2012",
+            "type": "payment.succeeded",
+            "created_at": "2026-03-10T13:02:17Z",
+            "data": {
+              "payment_id": "pay_9012",
+              "status": "approved",
+              "amount": 48000,
+              "currency": "ARS",
+              "payer": {
+                "email": "bruno.martinez@ejemplo.com",
+                "document": "27884411"
+              },
+              "metadata": {
+                "plan_code": "SEM-FULL",
+                "order_ref": "ord_8902"
+              }
+            }
+          }
+        }
+      },
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "x-webhook-secret": "s3m1n4r10-auto-2026"
+          },
+          "body": {
+            "id": "evt_2013",
+            "type": "payment.succeeded",
+            "created_at": "2026-03-10T13:08:51Z",
+            "data": {
+              "payment_id": "pay_9013",
+              "status": "approved",
+              "amount": 15000,
+              "currency": "ARS",
+              "payer": {
+                "email": "diego.sosa@ejemplo.com",
+                "document": "29455801"
+              },
+              "metadata": {
+                "plan_code": "SEM-BAS",
+                "order_ref": "ord_8903"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "Catálogo planes": [
+      {
+        "json": {
+          "plan_code": "SEM-BAS",
+          "nombre": "Acceso básico",
+          "precio_ars": 12000,
+          "duracion_dias": 30,
+          "contenidos": [
+            "c-101",
+            "c-102"
+          ]
+        }
+      },
+      {
+        "json": {
+          "plan_code": "SEM-PRO",
+          "nombre": "Acceso profesional",
+          "precio_ars": 24500,
+          "duracion_dias": 90,
+          "contenidos": [
+            "c-101",
+            "c-102",
+            "c-201",
+            "c-202"
+          ]
+        }
+      },
+      {
+        "json": {
+          "plan_code": "SEM-FULL",
+          "nombre": "Acceso completo",
+          "precio_ars": 48000,
+          "duracion_dias": 365,
+          "contenidos": [
+            "c-101",
+            "c-102",
+            "c-201",
+            "c-202",
+            "c-301"
+          ]
+        }
+      }
+    ],
+    "Padrón usuarios": [
+      {
+        "json": {
+          "user_id": "usr_0031",
+          "email": "ana.ferreyra@ejemplo.com",
+          "nombre": "Ana Ferreyra",
+          "documento": "30111222",
+          "estado": "activo"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "user_id": "usr_0044",
+          "email": "bruno.martinez@ejemplo.com",
+          "nombre": "Bruno Martinez",
+          "documento": "27884411",
+          "estado": "activo"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "user_id": "usr_0052",
+          "email": "carla.ojeda@ejemplo.com",
+          "nombre": "Carla Ojeda",
+          "documento": "33902155",
+          "estado": "suspendido"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "user_id": "usr_0067",
+          "email": "diego.sosa@ejemplo.com",
+          "nombre": "Diego Sosa",
+          "documento": "29455801",
+          "estado": "activo"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "user_id": "usr_0071",
+          "email": "elena.ruiz@ejemplo.com",
+          "nombre": "Elena Ruiz",
+          "documento": "31776004",
+          "estado": "activo"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "user_id": "usr_0088",
+          "email": "facundo.ibarra@ejemplo.com",
+          "nombre": "Facundo Ibarra",
+          "documento": "40218933",
+          "estado": "activo"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {},
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "f829c5bd-c10c-479f-b574-35ac52400f98",
+  "meta": {
+    "instanceId": "d6df57fb1ce86d34dcb7fd9e09b4b5e97a2b8650caf961775d3a6fd18ad3cfb4"
+  },
+  "nodeGroups": [],
+  "id": "iY0fd6fsw8It1jBW",
+  "tags": []
+}

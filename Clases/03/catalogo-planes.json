@@ -1,0 +1,23 @@
+[
+  {
+    "plan_code": "SEM-BAS",
+    "nombre": "Acceso básico",
+    "precio_ars": 12000,
+    "duracion_dias": 30,
+    "contenidos": ["c-101", "c-102"]
+  },
+  {
+    "plan_code": "SEM-PRO",
+    "nombre": "Acceso profesional",
+    "precio_ars": 24500,
+    "duracion_dias": 90,
+    "contenidos": ["c-101", "c-102", "c-201", "c-202"]
+  },
+  {
+    "plan_code": "SEM-FULL",
+    "nombre": "Acceso completo",
+    "precio_ars": 48000,
+    "duracion_dias": 365,
+    "contenidos": ["c-101", "c-102", "c-201", "c-202", "c-301"]
+  }
+]

@@ -1,0 +1,1407 @@
+{
+  "name": "Clase 3 - Cobro a acceso",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "cobros",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "32825332-3f99-441f-a4c8-5ee6b29f0900",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -2016,
+        496
+      ],
+      "webhookId": "78545866-0a6a-4340-9f68-24b89ee7673f",
+      "notesInFlow": true,
+      "notes": "Hay dos URLs: la de prueba y la de produccion. No son la misma."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "e31cb21f-ce00-446d-92e1-2d99958ecee4",
+              "leftValue": "={{ $json.headers['x-webhook-secret'] }}",
+              "rightValue": "s3m1n4r10-auto-2026",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "5e816952-ee48-48f7-a835-3b3f2601820b",
+      "name": "Secreto valido",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1776,
+        496
+      ],
+      "notes": "Las cabeceras llegan siempre en minusculas."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"error\": \"credencial invalida\" } }}",
+        "options": {
+          "responseCode": 401
+        }
+      },
+      "id": "835a2ac7-a2fa-4f3f-ab90-081289527737",
+      "name": "Responder 401",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -1776,
+        800
+      ],
+      "notes": "Ni siquiera se lee el cuerpo."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "ad83cc05-84ab-4e9b-8e89-33b8d8268164",
+              "leftValue": "={{ $json.body?.data?.payment_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "96b89f9e-4d94-4269-a7b4-5511fffae0e8",
+              "leftValue": "={{ $json.body?.data?.status }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "a2c55165-ced6-47cf-b122-e31a3975769d",
+              "leftValue": "={{ $json.body?.data?.payer?.email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "83ccb076-a32f-4cc0-b133-274191382a56",
+              "leftValue": "={{ $json.body?.data?.metadata?.plan_code }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "112e20ad-1142-417a-b034-ba6487c89b51",
+              "leftValue": "={{ $json.body?.data?.amount }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "9aecaf0a-55a9-4d72-b32d-332b6656ed9f",
+      "name": "Cuerpo valido",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1536,
+        496
+      ],
+      "notesInFlow": true,
+      "notes": "Un cuerpo incompleto es problema del emisor: 400."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"error\": \"cuerpo incompleto\", \"requeridos\": [\"data.payment_id\", \"data.status\", \"data.amount\", \"data.payer.email\", \"data.metadata.plan_code\"] } }}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "71993fdd-dc99-48c3-8434-0700eddc26a2",
+      "name": "Responder 400",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -1536,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Idempotencia: la clave es el identificador del PAGO, no el del evento.\n// Dos avisos distintos pueden referirse al mismo cobro.\n// Acá iría el código que va a revisar si ya procesamos esto\n\nreturn {\"ya_procesado\":false};\n"
+      },
+      "id": "4411f65e-32ad-4239-9d72-b8f59ec038de",
+      "name": "Pago ya procesado",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1296,
+        496
+      ],
+      "notesInFlow": true,
+      "notes": "Usa datos estaticos del flujo. Ojo: solo persisten entre ejecuciones de produccion, no en las pruebas manuales."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "886f5679-e992-4a42-a794-acad2b80ce88",
+              "leftValue": "={{ $json.ya_procesado }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "fe27eb67-3e02-4c95-a41e-8fe3864b42d9",
+      "name": "Es duplicado",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1056,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"recibido\": true, \"estado\": \"duplicado\", \"pago_id\": $json.pago_id } }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "7abfeda0-20b3-450c-9c29-53f943e34c32",
+      "name": "Responder 200 duplicado",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -816,
+        304
+      ],
+      "notesInFlow": true,
+      "notes": "La misma respuesta que la primera vez. El emisor no nota la diferencia."
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fe76333e-9c3d-4257-9a01-b833cde09db1",
+              "name": "pago",
+              "value": "={{ $('Webhook').item.json.body.data }}",
+              "type": "object"
+            },
+            {
+              "id": "6cc46939-8724-4ce7-bca9-6f733c076dfc",
+              "name": "evento_fecha",
+              "value": "={{ $('Webhook').first().json.body.created_at }}",
+              "type": "string"
+            },
+            {
+              "id": "d56f8cc6-cf63-4c37-9f9f-f8b6a6ff0460",
+              "name": "usuario",
+              "value": "={{ (() => {\n  const padron = $('Padrón usuarios').all().map((i) => i.json);\n  const correo = ($('Webhook').item.json.body.data.payer.email || '').trim().toLowerCase();\n  return padron.find((u) => (u.email || '').trim().toLowerCase() === correo) || null;\n})() }}",
+              "type": "object"
+            },
+            {
+              "id": "020e8023-4e64-4402-9ca5-4810588b50a7",
+              "name": "plan",
+              "value": "={{ (() => {\n  const catalogo = $('Catálogo planes').all().map((i) => i.json);\n  const codigo = $('Webhook').item.json.body.data.metadata.plan_code;\n  return catalogo.find((p) => p.plan_code === codigo) || null;\n})() }}",
+              "type": "object"
+            },
+            {
+              "id": "da01d3c2-3984-4b2f-a0cb-a360f8238b25",
+              "name": "vence",
+              "value": "={{ (() => {\n  const plan = $('Catálogo planes').all().map((i) => i.json).find((p) => p.plan_code === $('Webhook').first().json.body.data.metadata.plan_code);\n  if (!plan) return null;\n  const d = new Date($('Webhook').first().json.body.created_at);\n  d.setUTCDate(d.getUTCDate() + plan.duracion_dias);\n  return d.toISOString().slice(0, 10);\n})() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "870574d0-f91c-4af9-ba2b-930cfbfa34df",
+      "name": "Completar datos",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -512,
+        544
+      ],
+      "notesInFlow": true,
+      "notes": "El vencimiento se calcula sobre la fecha del EVENTO, no sobre la de ejecucion."
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "b599fc44-bf6c-4a34-b426-c771bf54954c",
+                    "leftValue": "={{ $json.pago.status }}",
+                    "rightValue": "approved",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "aprobado"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "d1115bac-8143-4cc8-9acd-5c161cf1bdb2",
+                    "leftValue": "={{ $json.pago.status }}",
+                    "rightValue": "rejected",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "rechazado"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "2d43b342-c829-440a-907c-08e8ecc0eded",
+                    "leftValue": "={{ $json.pago.status }}",
+                    "rightValue": "pending",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "pendiente"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "estado desconocido"
+        }
+      },
+      "id": "3ee0594d-edd8-4a62-9e7a-882aa35b5ba8",
+      "name": "Estado del pago",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        -144,
+        576
+      ],
+      "notesInFlow": true,
+      "notes": "Se pregunta por lo que se espera, no por lo que se descarta. \"Distinto de rechazado\" incluiria pendiente."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "618e3bd5-bb7f-4e6a-ba5e-7f827e6fdec0",
+              "leftValue": "={{ $json.usuario !== null && $json.usuario.estado === 'activo' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "476c67c1-d6e3-49b3-abcb-3b990585da3d",
+      "name": "Usuario habilitado",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        112,
+        480
+      ],
+      "notes": "Existe en el padron y ademas no esta suspendido."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "c742cac8-6327-4c0c-ae64-8e1a9265f3a0",
+              "leftValue": "={{ $json.plan !== null && $json.pago.currency === 'ARS' && Number($json.pago.amount) === Number($json.plan.precio_ars) }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c948b1ae-bdd0-43fb-9a9e-87be61a14573",
+      "name": "Plan e importe correctos",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        368,
+        400
+      ],
+      "notesInFlow": true,
+      "notes": "La moneda se controla ANTES que el importe. 55 es menor que 48000 y sin embargo 55 dolares no son menos."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Se registra recien despues de que el alta salio bien.\n// Registrar antes deja pagos marcados como procesados que nunca otorgaron nada.\n\nconst estado = $getWorkflowStaticData('global');\nestado.pagosProcesados = estado.pagosProcesados || {};\n\nconst datos = $('Completar datos').first().json;\n\nestado.pagosProcesados[datos.pago.payment_id] = {\n  otorgado_en: new Date().toISOString(),\n  user_id: datos.usuario.user_id,\n  plan: datos.plan.plan_code,\n};\n\nreturn $input.all();\n"
+      },
+      "id": "7463b8c3-b451-4c26-ad9f-88d8989a1155",
+      "name": "Registrar pago procesado",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        848,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"recibido\": true, \"estado\": \"acceso otorgado\", \"user_id\": $('Completar datos').first().json.usuario.user_id, \"vence\": $('Completar datos').first().json.vence } }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "c0a779c8-f54e-48fa-8187-fbe113d5103b",
+      "name": "Responder 200 otorgado",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1072,
+        368
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "44759367-782a-4bff-8356-585096b4ed1f",
+      "name": "Cola de revision",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        624,
+        656
+      ],
+      "notesInFlow": true,
+      "notes": "Seis de los trece eventos terminan aca. El motivo se lee en los datos de entrada del nodo."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"recibido\": true, \"estado\": \"en revision\" } }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "2b3d2c4f-6841-4385-83c7-822b85881f61",
+      "name": "Responder 200 en revision",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        848,
+        656
+      ],
+      "notesInFlow": true,
+      "notes": "Doscientos, no cuatrocientos cuatro. El problema es nuestro, no del emisor."
+    },
+    {
+      "parameters": {},
+      "id": "0540f420-ad50-45a5-9fae-5f79a51904b4",
+      "name": "Registrar sin otorgar",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        112,
+        880
+      ],
+      "notesInFlow": true,
+      "notes": "Rechazados y pendientes. Se registran, no otorgan nada."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"recibido\": true, \"estado\": $('Completar datos').first().json.pago.status } }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "1bfc45d2-8dda-43b6-be21-9bb320666116",
+      "name": "Responder 200 registrado",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        368,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Practica clase 3\n\nUn cobro entra por webhook y otorga un acceso.\n\n**Resultado esperado:** 3 accesos otorgados, 6 a revision, 2 registrados sin otorgar, un 400 y un 401.",
+        "height": 184,
+        "width": 464,
+        "color": 4
+      },
+      "id": "acaf65af-62bd-4738-9588-991ce327d8a2",
+      "name": "Nota c25b",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2288,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### La puerta\n\nLas tres verificaciones van **antes** de cualquier consulta a otro sistema.\n\nNo tiene sentido ir a buscar un usuario para un evento que no vamos a procesar.",
+        "height": 184,
+        "width": 420,
+        "color": 5
+      },
+      "id": "5021e801-7c4e-40db-8a05-744c35f3c380",
+      "name": "Nota 89a1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1808,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### El secreto compartido\n\n`x-webhook-secret: s3m1n4r10-auto-2026`",
+        "height": 188,
+        "width": 420,
+        "color": 3
+      },
+      "id": "1d3c6473-0439-412f-8628-52802c455ec3",
+      "name": "Nota 47df",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1360,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### El caso abierto\n\nEn **Plan e importe correctos** la comparacion es `===`.\n\nCon `>=`, el evento que paga de mas (`pay_9013`) otorgaria acceso y los otorgados pasan de 2 a 3.\n\nNinguna de las dos es obviamente correcta.",
+        "height": 212,
+        "width": 440,
+        "color": 3
+      },
+      "id": "55a1f338-c077-4e51-a1ab-b7a2de7ae208",
+      "name": "Nota 4da2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        336,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return  {\n  user_id: $json.usuario.user_id,\n  contenidos: $json.plan.contenidos,\n  vence: $json.vence,\n  payment_id: $json.pago.payment_id\n}\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        368
+      ],
+      "id": "0f152afa-27d7-4622-8934-5e2f4233988d",
+      "name": "Alta de acceso",
+      "notes": "payment_id viaja para que el otro lado tambien pueda descartar duplicados."
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    \"user_id\": \"usr_0031\",\n    \"email\": \"ana.ferreyra@ejemplo.com\",\n    \"nombre\": \"Ana Ferreyra\",\n    \"documento\": \"30111222\",\n    \"estado\": \"activo\"\n  },\n  {\n    \"user_id\": \"usr_0044\",\n    \"email\": \"bruno.martinez@ejemplo.com\",\n    \"nombre\": \"Bruno Martinez\",\n    \"documento\": \"27884411\",\n    \"estado\": \"activo\"\n  },\n  {\n    \"user_id\": \"usr_0052\",\n    \"email\": \"carla.ojeda@ejemplo.com\",\n    \"nombre\": \"Carla Ojeda\",\n    \"documento\": \"33902155\",\n    \"estado\": \"suspendido\"\n  },\n  {\n    \"user_id\": \"usr_0067\",\n    \"email\": \"diego.sosa@ejemplo.com\",\n    \"nombre\": \"Diego Sosa\",\n    \"documento\": \"29455801\",\n    \"estado\": \"activo\"\n  },\n  {\n    \"user_id\": \"usr_0071\",\n    \"email\": \"elena.ruiz@ejemplo.com\",\n    \"nombre\": \"Elena Ruiz\",\n    \"documento\": \"31776004\",\n    \"estado\": \"activo\"\n  },\n  {\n    \"user_id\": \"usr_0088\",\n    \"email\": \"facundo.ibarra@ejemplo.com\",\n    \"nombre\": \"Facundo Ibarra\",\n    \"documento\": \"40218933\",\n    \"estado\": \"activo\"\n  }\n]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -912,
+        640
+      ],
+      "id": "3d55b695-4f77-44ac-b3f9-e80dcf3db8fb",
+      "name": "Padrón usuarios"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    \"plan_code\": \"SEM-BAS\",\n    \"nombre\": \"Acceso básico\",\n    \"precio_ars\": 12000,\n    \"duracion_dias\": 30,\n    \"contenidos\": [\"c-101\", \"c-102\"]\n  },\n  {\n    \"plan_code\": \"SEM-PRO\",\n    \"nombre\": \"Acceso profesional\",\n    \"precio_ars\": 24500,\n    \"duracion_dias\": 90,\n    \"contenidos\": [\"c-101\", \"c-102\", \"c-201\", \"c-202\"]\n  },\n  {\n    \"plan_code\": \"SEM-FULL\",\n    \"nombre\": \"Acceso completo\",\n    \"precio_ars\": 48000,\n    \"duracion_dias\": 365,\n    \"contenidos\": [\"c-101\", \"c-102\", \"c-201\", \"c-202\", \"c-301\"]\n  }\n]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -912,
+        800
+      ],
+      "id": "3f65a43c-201f-4254-bc6b-989bcade0c95",
+      "name": "Catálogo planes"
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch",
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -736,
+        528
+      ],
+      "id": "cdde1c39-3c53-4e54-b310-a38f365ba404",
+      "name": "Merge"
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "x-webhook-secret": "s3m1n4r10-auto-2026"
+          },
+          "body": {
+            "id": "evt_2001",
+            "type": "payment.succeeded",
+            "created_at": "2026-03-10T12:00:03Z",
+            "data": {
+              "payment_id": "pay_9001",
+              "status": "approved",
+              "amount": 24500,
+              "currency": "ARS",
+              "payer": {
+                "email": "ana.ferreyra@ejemplo.com",
+                "document": "30111222"
+              },
+              "metadata": {
+                "plan_code": "SEM-PRO",
+                "order_ref": "ord_8891"
+              }
+            }
+          }
+        }
+      },
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "x-webhook-secret": "s3m1n4r10-auto-2026"
+          },
+          "body": {
+            "id": "evt_2002",
+            "type": "payment.succeeded",
+            "created_at": "2026-03-10T12:04:47Z",
+            "data": {
+              "payment_id": "pay_9002",
+              "status": "approved",
+              "amount": 12000,
+              "currency": "ARS",
+              "payer": {
+                "email": "bruno.martinez@ejemplo.com",
+                "document": "27884411"
+              },
+              "metadata": {
+                "plan_code": "SEM-BAS",
+                "order_ref": "ord_8892"
+              }
+            }
+          }
+        }
+      },
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "x-webhook-secret": "s3m1n4r10-auto-2026"
+          },
+          "body": {
+            "id": "evt_2003",
+            "type": "payment.failed",
+            "created_at": "2026-03-10T12:09:12Z",
+            "data": {
+              "payment_id": "pay_9003",
+              "status": "rejected",
+              "amount": 24500,
+              "currency": "ARS",
+              "decline_reason": "insufficient_funds",
+              "payer": {
+                "email": "diego.sosa@ejemplo.com",
+                "document": "29455801"
+              },
+              "metadata": {
+                "plan_code": "SEM-PRO",
+                "order_ref": "ord_8893"
+              }
+            }
+          }
+        }
+      },
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "x-webhook-secret": "s3m1n4r10-auto-2026"
+          },
+          "body": {
+            "id": "evt_2004",
+            "type": "payment.pending",
+            "created_at": "2026-03-10T12:15:38Z",
+            "data": {
+              "payment_id": "pay_9004",
+              "status": "pending",
+              "amount": 12000,
+              "currency": "ARS",
+              "payer": {
+                "email": "facundo.ibarra@ejemplo.com",
+                "document": "40218933"
+              },
+              "metadata": {
+                "plan_code": "SEM-BAS",
+                "order_ref": "ord_8894"
+              }
+            }
+          }
+        }
+      },
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "x-webhook-secret": "s3m1n4r10-auto-2026"
+          },
+          "body": {
+            "id": "evt_2005",
+            "type": "payment.succeeded",
+            "created_at": "2026-03-10T12:22:01Z",
+            "data": {
+              "payment_id": "pay_9005",
+              "status": "approved",
+              "amount": 12000,
+              "currency": "ARS",
+              "payer": {
+                "email": "tomas.gil@ejemplo.com",
+                "document": "38221900"
+              },
+              "metadata": {
+                "plan_code": "SEM-BAS",
+                "order_ref": "ord_8895"
+              }
+            }
+          }
+        }
+      },
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "x-webhook-secret": "s3m1n4r10-auto-2026"
+          },
+          "body": {
+            "id": "evt_2006",
+            "type": "payment.succeeded",
+            "created_at": "2026-03-10T12:28:55Z",
+            "data": {
+              "payment_id": "pay_9006",
+              "status": "approved",
+              "amount": 12000,
+              "currency": "ARS",
+              "payer": {
+                "email": "carla.ojeda@ejemplo.com",
+                "document": "33902155"
+              },
+              "metadata": {
+                "plan_code": "SEM-BAS",
+                "order_ref": "ord_8896"
+              }
+            }
+          }
+        }
+      },
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "x-webhook-secret": "s3m1n4r10-auto-2026"
+          },
+          "body": {
+            "id": "evt_2007",
+            "type": "payment.succeeded",
+            "created_at": "2026-03-10T12:35:20Z",
+            "data": {
+              "payment_id": "pay_9007",
+              "status": "approved",
+              "amount": 12000,
+              "currency": "ARS",
+              "payer": {
+                "email": "elena.ruiz@ejemplo.com",
+                "document": "31776004"
+              },
+              "metadata": {
+                "plan_code": "SEM-PRO",
+                "order_ref": "ord_8897"
+              }
+            }
+          }
+        }
+      },
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "x-webhook-secret": "s3m1n4r10-auto-2026"
+          },
+          "body": {
+            "id": "evt_2008",
+            "type": "payment.succeeded",
+            "created_at": "2026-03-10T12:41:09Z",
+            "data": {
+              "payment_id": "pay_9001",
+              "status": "approved",
+              "amount": 24500,
+              "currency": "ARS",
+              "payer": {
+                "email": "ana.ferreyra@ejemplo.com",
+                "document": "30111222"
+              },
+              "metadata": {
+                "plan_code": "SEM-PRO",
+                "order_ref": "ord_8891"
+              }
+            }
+          }
+        }
+      },
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "x-webhook-secret": "s3m1n4r10-auto-2026"
+          },
+          "body": {
+            "id": "evt_2009",
+            "type": "payment.succeeded",
+            "created_at": "2026-03-10T12:47:33Z",
+            "data": {
+              "payment_id": "pay_9009",
+              "status": "approved",
+              "amount": 60000,
+              "currency": "ARS",
+              "payer": {
+                "email": "ana.ferreyra@ejemplo.com",
+                "document": "30111222"
+              },
+              "metadata": {
+                "plan_code": "SEM-GOLD",
+                "order_ref": "ord_8899"
+              }
+            }
+          }
+        }
+      },
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "x-webhook-secret": "s3m1n4r10-auto-2026"
+          },
+          "body": {
+            "id": "evt_2010",
+            "type": "payment.succeeded",
+            "created_at": "2026-03-10T12:53:44Z",
+            "data": {
+              "payment_id": "pay_9010",
+              "status": "approved",
+              "amount": 55,
+              "currency": "USD",
+              "payer": {
+                "email": "facundo.ibarra@ejemplo.com",
+                "document": "40218933"
+              },
+              "metadata": {
+                "plan_code": "SEM-FULL",
+                "order_ref": "ord_8900"
+              }
+            }
+          }
+        }
+      },
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "x-webhook-secret": "s3m1n4r10-auto-2026"
+          },
+          "body": {
+            "id": "evt_2011",
+            "type": "payment.succeeded",
+            "created_at": "2026-03-10T12:58:02Z",
+            "data": {
+              "status": "approved",
+              "amount": 12000,
+              "currency": "ARS",
+              "payer": {
+                "email": "diego.sosa@ejemplo.com",
+                "document": "29455801"
+              },
+              "metadata": {
+                "plan_code": "SEM-BAS",
+                "order_ref": "ord_8901"
+              }
+            }
+          }
+        }
+      },
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "x-webhook-secret": "clave-que-no-es"
+          },
+          "body": {
+            "id": "evt_2012",
+            "type": "payment.succeeded",
+            "created_at": "2026-03-10T13:02:17Z",
+            "data": {
+              "payment_id": "pay_9012",
+              "status": "approved",
+              "amount": 48000,
+              "currency": "ARS",
+              "payer": {
+                "email": "bruno.martinez@ejemplo.com",
+                "document": "27884411"
+              },
+              "metadata": {
+                "plan_code": "SEM-FULL",
+                "order_ref": "ord_8902"
+              }
+            }
+          }
+        }
+      },
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "x-webhook-secret": "s3m1n4r10-auto-2026"
+          },
+          "body": {
+            "id": "evt_2013",
+            "type": "payment.succeeded",
+            "created_at": "2026-03-10T13:08:51Z",
+            "data": {
+              "payment_id": "pay_9013",
+              "status": "approved",
+              "amount": 15000,
+              "currency": "ARS",
+              "payer": {
+                "email": "diego.sosa@ejemplo.com",
+                "document": "29455801"
+              },
+              "metadata": {
+                "plan_code": "SEM-BAS",
+                "order_ref": "ord_8903"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "Pago ya procesado": [
+      {
+        "json": {
+          "ya_procesado": false
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "ya_procesado": false
+        },
+        "pairedItem": {
+          "item": 1
+        }
+      },
+      {
+        "json": {
+          "ya_procesado": false
+        },
+        "pairedItem": {
+          "item": 2
+        }
+      },
+      {
+        "json": {
+          "ya_procesado": false
+        },
+        "pairedItem": {
+          "item": 3
+        }
+      },
+      {
+        "json": {
+          "ya_procesado": false
+        },
+        "pairedItem": {
+          "item": 4
+        }
+      },
+      {
+        "json": {
+          "ya_procesado": false
+        },
+        "pairedItem": {
+          "item": 5
+        }
+      },
+      {
+        "json": {
+          "ya_procesado": false
+        },
+        "pairedItem": {
+          "item": 6
+        }
+      },
+      {
+        "json": {
+          "ya_procesado": false
+        },
+        "pairedItem": {
+          "item": 7
+        }
+      },
+      {
+        "json": {
+          "ya_procesado": false
+        },
+        "pairedItem": {
+          "item": 8
+        }
+      },
+      {
+        "json": {
+          "ya_procesado": false
+        },
+        "pairedItem": {
+          "item": 9
+        }
+      },
+      {
+        "json": {
+          "ya_procesado": false
+        },
+        "pairedItem": {
+          "item": 10
+        }
+      }
+    ],
+    "Catálogo planes": [
+      {
+        "json": {
+          "plan_code": "SEM-BAS",
+          "nombre": "Acceso básico",
+          "precio_ars": 12000,
+          "duracion_dias": 30,
+          "contenidos": [
+            "c-101",
+            "c-102"
+          ]
+        }
+      },
+      {
+        "json": {
+          "plan_code": "SEM-PRO",
+          "nombre": "Acceso profesional",
+          "precio_ars": 24500,
+          "duracion_dias": 90,
+          "contenidos": [
+            "c-101",
+            "c-102",
+            "c-201",
+            "c-202"
+          ]
+        }
+      },
+      {
+        "json": {
+          "plan_code": "SEM-FULL",
+          "nombre": "Acceso completo",
+          "precio_ars": 48000,
+          "duracion_dias": 365,
+          "contenidos": [
+            "c-101",
+            "c-102",
+            "c-201",
+            "c-202",
+            "c-301"
+          ]
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Secreto valido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Secreto valido": {
+      "main": [
+        [
+          {
+            "node": "Cuerpo valido",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder 401",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cuerpo valido": {
+      "main": [
+        [
+          {
+            "node": "Pago ya procesado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder 400",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pago ya procesado": {
+      "main": [
+        [
+          {
+            "node": "Es duplicado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Es duplicado": {
+      "main": [
+        [
+          {
+            "node": "Responder 200 duplicado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Catálogo planes",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Padrón usuarios",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Completar datos": {
+      "main": [
+        [
+          {
+            "node": "Estado del pago",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Estado del pago": {
+      "main": [
+        [
+          {
+            "node": "Usuario habilitado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Registrar sin otorgar",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Registrar sin otorgar",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Cola de revision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Usuario habilitado": {
+      "main": [
+        [
+          {
+            "node": "Plan e importe correctos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Cola de revision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Plan e importe correctos": {
+      "main": [
+        [
+          {
+            "node": "Alta de acceso",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Cola de revision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar pago procesado": {
+      "main": [
+        [
+          {
+            "node": "Responder 200 otorgado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cola de revision": {
+      "main": [
+        [
+          {
+            "node": "Responder 200 en revision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar sin otorgar": {
+      "main": [
+        [
+          {
+            "node": "Responder 200 registrado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alta de acceso": {
+      "main": [
+        [
+          {
+            "node": "Registrar pago procesado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Padrón usuarios": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Catálogo planes": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Completar datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "b306c3fd-2e8d-41a8-ab35-3ea5fb7b6a69",
+  "meta": {
+    "instanceId": "d6df57fb1ce86d34dcb7fd9e09b4b5e97a2b8650caf961775d3a6fd18ad3cfb4"
+  },
+  "nodeGroups": [],
+  "id": "FYAV64ffbQUrq1ky",
+  "tags": []
+}

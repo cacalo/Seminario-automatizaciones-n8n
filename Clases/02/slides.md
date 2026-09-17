@@ -62,10 +62,6 @@ de que lo rompieras?"
 Vamos a rediseñar nuestro flujo para adaptarlo a situaciones más realistas.
 </div>
 
-
----
-layout: section
-class: section-break
 ---
 
 # Versionado
@@ -197,7 +193,6 @@ va a haber pegado una clave dentro de una URL en un nodo HTTP. Eso sí viaja.
 
 ---
 
-
 # Disparadores
 
 <div class="wire"><span></span></div>
@@ -309,7 +304,6 @@ Un disparador programado o manual corre siempre igual: le toca decidir qué ya p
 
 </div>
 
-
 <!--
 Hoy no lo implementamos: la práctica corre con disparador manual. Pero hay que
 nombrarlo ahora porque en la unidad 7 vuelve como problema serio.
@@ -343,7 +337,6 @@ nombrarlo ahora porque en la unidad 7 vuelve como problema serio.
 
 </div>
 
-
 <!--
 No abrir el tema de la seguridad del webhook acá o se come la clase.
 Solo dejar plantado que "que llegue" no es "que sea legítimo".
@@ -355,14 +348,14 @@ Solo dejar plantado que "que llegue" no es "que sea legítimo".
 
 <div class="mt-6">
 
-| Situación | Disparador |
-| --- | --- |
-| Estás construyendo y probando | Manual |
-| Un cierre diario, semanal o mensual | Programado |
-| El origen no tiene forma de avisar | Programado |
-| Hace falta reaccionar en segundos | Webhook |
-| El origen ya emite eventos | Webhook |
-| El proceso lo decide una persona | Manual |
+| Situación                                             | Disparador                            |
+| ----------------------------------------------------- | ------------------------------------- |
+| Estás construyendo y probando                         | Manual                                |
+| Un cierre diario, semanal o mensual                   | Programado                            |
+| El origen no tiene forma de avisar                    | Programado                            |
+| Hace falta reaccionar en segundos                     | Webhook                               |
+| El origen ya emite eventos                            | Webhook                               |
+| El proceso lo decide una persona                      | Manual                                |
 | El origen avisa pero no confiás en que siempre llegue | Webhook y además un programado de red |
 
 </div>
@@ -377,6 +370,7 @@ que siempre pregunta alguien.
 -->
 
 ---
+
 layout: section
 class: section-break
 ---
@@ -560,20 +554,19 @@ práctica y conviene que lo tengan a la vista todo el tiempo.
 
 <div class="mt-4">
 
-| Destino | Formulario web | CRM | Planilla |
-| --- | --- | --- | --- |
-| `email` | `contact.email` | `email_address` | `Correo` |
-| `nombre` | `contact.firstName` | `full_name` hasta el primer espacio | `Nombre y Apellido` idem |
-| `apellido` | `contact.lastName` | resto de `full_name` | resto |
-| `telefono` | `contact.phone` | `phone_number` | `Teléfono` |
-| `organizacion` | `answers.company` | `org` | `Empresa` |
-| `cargo` | `answers.role` | `job_title` | `Cargo` |
-| `consentimiento` | `answers.consent` | `opt_in` | `Acepta novedades` |
-| `fecha_alta` | `submittedAt` | `created` | `Fecha` |
-| `origen` | `"web"` | `"crm"` | `"evento"` |
+| Destino          | Formulario web      | CRM                                 | Planilla                 |
+| ---------------- | ------------------- | ----------------------------------- | ------------------------ |
+| `email`          | `contact.email`     | `email_address`                     | `Correo`                 |
+| `nombre`         | `contact.firstName` | `full_name` hasta el primer espacio | `Nombre y Apellido` idem |
+| `apellido`       | `contact.lastName`  | resto de `full_name`                | resto                    |
+| `telefono`       | `contact.phone`     | `phone_number`                      | `Teléfono`               |
+| `organizacion`   | `answers.company`   | `org`                               | `Empresa`                |
+| `cargo`          | `answers.role`      | `job_title`                         | `Cargo`                  |
+| `consentimiento` | `answers.consent`   | `opt_in`                            | `Acepta novedades`       |
+| `fecha_alta`     | `submittedAt`       | `created`                           | `Fecha`                  |
+| `origen`         | `"web"`             | `"crm"`                             | `"evento"`               |
 
 </div>
-
 
 <!--
 Notar que la fila de apellido ya tiene un problema escondido: "Jorge Da Silva"
@@ -646,7 +639,6 @@ Prioridad por fuente, y la fecha más antigua siempre (puede tener datos acumula
 La deduplicación no es "quedarse con uno": es <b class="sig">fusionar</b>. El registro final puede tener el teléfono de una fuente y la empresa de otra.
 </div>
 
-
 ---
 
 ## Nodos que sirven para esto
@@ -672,9 +664,7 @@ Aceptar código solo para el partido de nombre y apellido, y para nada más.
 -->
 
 ---
-layout: section
-class: section-break
----
+
 
 # Caso de uso
 
@@ -710,7 +700,6 @@ Una jornada abierta a la comunidad. La gente se inscribió por tres vías distin
 <div class="box box-warn mt-8 text-sm">
 Hay gente que se anotó por dos vías. Hay registros que nunca dieron consentimiento. Y hay al menos un correo que no es un correo.
 </div>
-
 
 ---
 
@@ -767,9 +756,7 @@ En el conjunto de datos hay un caso de cada uno, a propósito.
 -->
 
 ---
-layout: section
-class: section-break
----
+
 
 # Práctica guiada
 
@@ -913,21 +900,4 @@ Dejarla puesta mientras recorrés el aula.
 Repaso en vivo de los errores que aparecieron hoy en el aula.
 </div>
 </div>
-
 </div>
-
-<!-- <div class="box box-sig mt-8 text-sm">
-<b class="sig">Para la clase que viene</b>
-<div class="mute mt-1">
-Subir al repositorio la definición del flujo de hoy en <code>clase-02/</code>, con la captura de las tres salidas y sus conteos. Y pensar una respuesta a esta pregunta: si en vez de correr a mano el flujo lo dispara un aviso del otro sistema, ¿cómo sabés que ese aviso es legítimo?
-</div>
-</div> -->
-
-<!--
-Dejar la pregunta picando sin responderla. Es la apertura literal de la clase 3.
--->
-
----
-layout: center
-class: text-center
----
