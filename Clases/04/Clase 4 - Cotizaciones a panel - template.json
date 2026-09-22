@@ -1,0 +1,639 @@
+{
+  "name": "Clase 4 - Cotizaciones a panel - template",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## DolarAPI\n[Ver API](https://dolarapi.com/docs/argentina/operations/get-dolares.html)",
+        "height": 96,
+        "width": 150
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        16,
+        2544
+      ],
+      "id": "6ad138a9-dac4-4782-be3f-7082df951393",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Disparador",
+        "height": 200,
+        "width": 200,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        2624
+      ],
+      "id": "0a2faa2d-08d7-414e-9e4e-ca4c05cbd7f7",
+      "name": "Nota 12"
+    },
+    {
+      "parameters": {
+        "content": "## Entrada",
+        "height": 356,
+        "width": 260,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        2480
+      ],
+      "id": "812a5a5b-7641-48ef-8ddc-00769cd582a6",
+      "name": "Nota 13"
+    },
+    {
+      "parameters": {
+        "content": "## Salida",
+        "height": 420,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1504,
+        2480
+      ],
+      "id": "31b04b7a-535b-4ca9-97df-1ec4702d733f",
+      "name": "Nota 15"
+    },
+    {
+      "parameters": {
+        "content": "## Si algo falla",
+        "height": 260,
+        "width": 472
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        2944
+      ],
+      "id": "ec7b98f8-e6ac-432f-9b8f-05ce310edc26",
+      "name": "Nota 16"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        2672
+      ],
+      "id": "bdf43f0c-b226-4f1f-9b52-532eaf5dad9b",
+      "name": "Ejecución manual"
+    },
+    {
+      "parameters": {
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        32,
+        2672
+      ],
+      "id": "9300f3c3-0d54-4476-8b61-1a315df9424c",
+      "name": "Traer cotizaciones",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput",
+      "notes": "API publica, sin nodo dedicado y sin clave. Comparar con el destino."
+    },
+    {
+      "parameters": {
+        "jsCode": "// El 200 no garantiza que la respuesta sirva.\n// Este nodo clasifica cada fila: utilizable o no, y por qué.\n\n// Casas que legítimamente no publican precio de compra.\nconst SIN_COMPRA = ['tarjeta'];\n\nfunction aNumero(v) {\n  if (v === null || v === undefined || v === '') return null;\n  const n = Number(v);                 // \"1015.00\" -> 1015\n  return Number.isFinite(n) ? n : NaN; // NaN marca \"vino algo que no es un número\"\n}\n\nconst salida = [];\n\nfor (const item of $input.all()) {\n  const fila = item.json;\n\n  const compra = aNumero(fila.compra);\n  const venta = aNumero(fila.venta);\n\n  let motivo = null;\n\n  if (!fila.casa) {\n    motivo = 'casa_ausente';\n  } else if (Number.isNaN(compra) || Number.isNaN(venta)) {\n    motivo = 'importe_no_numerico';\n  } else if (venta === null) {\n    motivo = 'venta_ausente';\n  } else if (compra === null && !SIN_COMPRA.includes(fila.casa)) {\n    motivo = 'compra_ausente';\n  } else if (compra !== null && venta < compra) {\n    // Numéricamente posible, comercialmente imposible.\n    motivo = 'venta_menor_que_compra';\n  } else if (!fila.fechaActualizacion) {\n    motivo = 'fecha_ausente';\n  }\n\n  salida.push({\n    json: {\n      casa: fila.casa ?? null,\n      nombre: fila.nombre ?? null,\n      compra,\n      venta,\n      fechaActualizacion: fila.fechaActualizacion ?? null,\n      _valido: motivo === null,\n      _motivo: motivo,\n      _original: fila,\n    },\n  });\n}\n\nreturn salida;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        336,
+        2672
+      ],
+      "id": "469cda7b-739c-46b1-9603-bd3452bc075c",
+      "name": "Validar la respuesta",
+      "notesInFlow": true,
+      "notes": "Respondió 200. Eso no quiere decir que los datos sirvan."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "650d00a7-8bbb-4a72-a3ba-b97436357263",
+              "leftValue": "={{ $json._valido }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        576,
+        2672
+      ],
+      "id": "0fa1473d-a784-4336-9079-c46278ce6c72",
+      "name": "Es utilizable",
+      "notes": "Salida 0 = se publica. Salida 1 = se descarta con motivo."
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1e0ef145-fb44-4ef2-8e92-ec9038e96482",
+              "name": "mercado",
+              "value": "={{ $json.casa }}",
+              "type": "string"
+            },
+            {
+              "id": "fbb3eb31-cf16-4aa0-b9cd-40189b877626",
+              "name": "etiqueta",
+              "value": "={{ $json.nombre }}",
+              "type": "string"
+            },
+            {
+              "id": "32d497b0-0f4f-44bc-a430-deea839e63af",
+              "name": "compra",
+              "value": "={{ $json.compra }}",
+              "type": "number"
+            },
+            {
+              "id": "b33dabe0-db33-4dfa-ad3c-d34afcb5bc03",
+              "name": "venta",
+              "value": "={{ $json.venta }}",
+              "type": "number"
+            },
+            {
+              "id": "98b0368c-c524-421e-bb0d-8ea8563878fd",
+              "name": "spread",
+              "value": "={{ $json.compra === null ? null : Number(($json.venta - $json.compra).toFixed(2)) }}",
+              "type": "number"
+            },
+            {
+              "id": "82e34363-b766-4c03-b72d-2e97752a386e",
+              "name": "actualizado",
+              "value": "={{ $json.fechaActualizacion }}",
+              "type": "string"
+            },
+            {
+              "id": "eb959010-909a-4b7a-9882-86cbc6677c92",
+              "name": "fuente",
+              "value": "dolarapi",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        816,
+        2592
+      ],
+      "id": "bdbe9932-4e9c-45a8-88d5-3f2822894ae1",
+      "name": "Mapear al formato del panel",
+      "notes": "El panel tiene su propio vocabulario. Otra vez traducir campos."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Un solo envío con todas las cotizaciones, no uno por fila.\n// Sin este nodo, el HTTP de abajo se ejecuta una vez por item y publica\n// seis gists de una sola fila cada uno.\n\nconst mercados = $input.all().map((i) => i.json);\n\nreturn [\n  {\n    json: {\n      panel: 'cotizaciones-usd',\n      generado: new Date().toISOString(),\n      mercados: mercados.length,\n      cotizaciones: mercados,\n    },\n  },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1056,
+        2592
+      ],
+      "id": "f330b43d-80f9-47d8-84b0-4aa9366d9f76",
+      "name": "Armar el panel",
+      "notesInFlow": true,
+      "notes": "Seis items entran, un solo envío sale."
+    },
+    {
+      "parameters": {
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github+json"
+            },
+            {
+              "name": "X-GitHub-Api-Version",
+              "value": "2022-11-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ description: \"Panel de cotizaciones USD — \" + $json.generado.slice(0, 10), public: false, files: { \"panel-cotizaciones.json\": { content: JSON.stringify($json, null, 2) } } }) }}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1296,
+        2592
+      ],
+      "id": "f72656e8-4d44-459b-a7ad-88d3785be8fc",
+      "name": "Publicar el panel",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput",
+      "notes": "Sin credencial devuelve 401."
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1568,
+        2560
+      ],
+      "id": "8bd83585-06ec-4168-872b-61f8c1a24ce3",
+      "name": "Publicado",
+      "notesInFlow": true,
+      "notes": "En html_url esta la direccion del gist. Abrirla."
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1568,
+        2736
+      ],
+      "id": "26ffea2a-9078-4c17-a13c-7568fb29b59a",
+      "name": "Cotizaciones descartadas",
+      "notesInFlow": true,
+      "notes": "Dos filas, cada una con su motivo. No se tiran: se ven."
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Una sola rama de aviso para todos los nodos que pueden fallar.\n// El item que llega por una salida de error trae el error en $json.error.\n\nconst err = $json.error || {};\nconst codigo = err.httpCode ? Number(err.httpCode) : null;\nconst mensaje = err.message ?? String(err);\n\n// GitHub devuelve 403 para dos cosas distintas: \"no tenés permiso\" y \"te\n// pasaste del límite\". La primera es permanente y la segunda no. El código\n// solo no alcanza: hay que mirar el cuerpo.\nconst porLimite = /rate limit|too many requests|abuse detection/i.test(mensaje);\n\n// Distinguir transitorio de permanente cambia qué se hace después:\n// el transitorio ya reintentó solo, el permanente necesita a una persona.\nconst transitorio =\n  codigo === 429 ||\n  (codigo !== null && codigo >= 500) ||\n  codigo === null ||\n  (codigo === 403 && porLimite);\n\n// El 401 y el 403 merecen su propio texto: casi siempre es la credencial,\n// y quien lee el aviso a las tres de la mañana necesita saberlo.\nlet queHacer;\nif (codigo === 401) {\n  queHacer = 'La credencial no sirve: token ausente, mal escrito o vencido.';\n} else if (codigo === 403 && porLimite) {\n  queHacer = 'Límite de uso agotado. Esperar a que se reponga, o repartir la carga.';\n} else if (codigo === 403) {\n  queHacer = 'Autenticado, pero al token le falta el permiso que pide este endpoint.';\n} else if (transitorio) {\n  queHacer = 'Ya se reintentó y siguió fallando. Revisar el estado del proveedor.';\n} else {\n  queHacer = 'No tiene sentido reintentar. Revisar URL, cuerpo enviado o permisos.';\n}\n\nreturn [\n  {\n    json: {\n      flujo: $workflow.name,\n      ejecucion: $execution.id,\n      nodo: err.node?.name ?? 'desconocido',\n      codigo_http: codigo,\n      mensaje: err.message ?? String(err),\n      clase: transitorio ? 'transitorio' : 'permanente',\n      que_hacer: queHacer,\n      cuando: new Date().toISOString(),\n    },\n  },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        3040
+      ],
+      "id": "20c5a098-6edb-427c-839f-f2e1aac6945c",
+      "name": "Armar el aviso",
+      "notesInFlow": true,
+      "notes": "Los dos nodos que pueden fallar entran acá. Una sola rama de aviso."
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1552,
+        3040
+      ],
+      "id": "72dc6f45-7712-42d3-99e3-0feba1aa8865",
+      "name": "Notificar la falla",
+      "notesInFlow": true,
+      "notes": "En producción acá va Slack, un correo o una guardia. Hoy alcanza con verlo."
+    },
+    {
+      "parameters": {
+        "content": "## Clase 4 — Cotizaciones a un panel\n\nUna API **sin** credencial entra.\nUna API **con** credencial recibe el resultado.",
+        "height": 116,
+        "width": 360,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        2480
+      ],
+      "id": "232bc1f5-7cff-475c-ae88-f537295feca8",
+      "name": "Nota 17"
+    },
+    {
+      "parameters": {
+        "content": "## Token para gists\n\n1. GitHub → Settings → Developer settings → **Personal access tokens** → Fine-grained tokens.\n2. Generar uno con un solo permiso: **Account permissions → Gists → Read and write**. No hace falta nada mas.\n3. En n8n, credencial nueva de tipo **Bearer Auth**:\n   - Name: `Authorization`\n   - Value: `github_pat_...` (el token)\n4. Seleccionarla en el nodo  **Publicar el panel**.",
+        "height": 260,
+        "width": 520,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        928,
+        2192
+      ],
+      "id": "4f6acdca-f1fc-415d-96ce-49e6d013600d",
+      "name": "Nota 18"
+    },
+    {
+      "parameters": {
+        "content": "### La salida de error son dos pasos\n\n1. En el nodo, Settings → **On Error: Continue (using error output)**. Eso *crea* la segunda salida.\n2. **Cablearla** a algún lado.\n\nSolo el paso 1 y el error se descarta en silencio: la ejecución figura como exitosa.\nSolo el paso 2 y la salida nunca dispara.",
+        "height": 260,
+        "width": 460,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        2944
+      ],
+      "id": "2edf2f31-5081-415a-bd77-a58b104a16df",
+      "name": "Nota 19"
+    },
+    {
+      "parameters": {
+        "content": "### Reintentar sirve para lo transitorio\n\nLos dos HTTP del flujo principal tienen **Retry On Fail** con 3 intentos y 5 s de espera.\n\nUn 429 o un 503 se arreglan solos casi siempre. Un token vencido no se arregla nunca: reintentarlo son tres 401 en vez de uno.",
+        "height": 260,
+        "width": 440,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        320,
+        2944
+      ],
+      "id": "96b8cfc9-16c1-46db-a3c6-a326ee3281f9",
+      "name": "Nota 20"
+    },
+    {
+      "parameters": {
+        "content": "### Fallas inducidas\n\n**1.** Romper un caracter del token y ejecutar. Mirar el 401 y que dice el aviso.\n\n**2.** Poner el tiempo de espera del destino en 1 ms. ¿Se creo el gist o no?\n\n**3.** En **Validar la respuesta**, cambiar `venta` por `precio`. Ningun nodo se pone en rojo y el panel sale mal.",
+        "height": 264,
+        "width": 440,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        800,
+        2944
+      ],
+      "id": "75da0bca-9473-4b37-8125-c9e9e682e899",
+      "name": "Nota 21"
+    },
+    {
+      "parameters": {
+        "content": "## Proceso",
+        "height": 420,
+        "width": 1180,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        272,
+        2480
+      ],
+      "id": "d17dcdd7-e712-4871-8e59-e726ff570916",
+      "name": "Nota "
+    },
+    {
+      "parameters": {
+        "content": "## Hithub gists\n[Ver API](https://docs.github.com/es/rest/gists/gists?apiVersion=2026-03-10#create-a-gist)",
+        "height": 96,
+        "width": 150
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        2496
+      ],
+      "id": "ee973972-bb91-4687-86c4-839251c31851",
+      "name": "Sticky Note1"
+    }
+  ],
+  "pinData": {
+    "Traer cotizaciones": [
+      {
+        "json": {
+          "moneda": "USD",
+          "casa": "oficial",
+          "nombre": "Oficial",
+          "compra": 1485,
+          "venta": 1535,
+          "fechaActualizacion": "2026-09-21T18:55:00.000Z"
+        }
+      },
+      {
+        "json": {
+          "moneda": "USD",
+          "casa": "blue",
+          "nombre": "Blue",
+          "compra": null,
+          "venta": null,
+          "fechaActualizacion": "2026-09-22T11:58:00.000Z"
+        }
+      },
+      {
+        "json": {
+          "moneda": "USD",
+          "casa": "bolsa",
+          "nombre": "Bolsa",
+          "compra": 1531.6,
+          "venta": 1536.5,
+          "fechaActualizacion": "2026-09-22T11:58:00.000Z"
+        }
+      },
+      {
+        "json": {
+          "moneda": "USD",
+          "casa": "contadoconliqui",
+          "nombre": "Contado con liquidación",
+          "compra": 1595,
+          "venta": 1596.4,
+          "fechaActualizacion": "2026-09-22T11:58:00.000Z"
+        }
+      },
+      {
+        "json": {
+          "moneda": "USD",
+          "casa": "mayorista",
+          "nombre": "Mayorista",
+          "compra": 1505,
+          "venta": 1514,
+          "fechaActualizacion": "2026-09-21T12:55:00.000Z"
+        }
+      },
+      {
+        "json": {
+          "moneda": "USD",
+          "casa": "cripto",
+          "nombre": "Cripto",
+          "compra": 1590.46,
+          "venta": 1594.55,
+          "fechaActualizacion": "2026-09-22T11:58:00.000Z"
+        }
+      },
+      {
+        "json": {
+          "moneda": "USD",
+          "casa": "tarjeta",
+          "nombre": "Tarjeta",
+          "compra": 1930.5,
+          "venta": 1995.5,
+          "fechaActualizacion": "2026-09-21T18:55:00.000Z"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Ejecución manual": {
+      "main": [
+        [
+          {
+            "node": "Traer cotizaciones",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Traer cotizaciones": {
+      "main": [
+        [
+          {
+            "node": "Validar la respuesta",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Armar el aviso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar la respuesta": {
+      "main": [
+        [
+          {
+            "node": "Es utilizable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Es utilizable": {
+      "main": [
+        [
+          {
+            "node": "Mapear al formato del panel",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Cotizaciones descartadas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mapear al formato del panel": {
+      "main": [
+        [
+          {
+            "node": "Armar el panel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Armar el panel": {
+      "main": [
+        [
+          {
+            "node": "Publicar el panel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publicar el panel": {
+      "main": [
+        [
+          {
+            "node": "Publicado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Armar el aviso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Armar el aviso": {
+      "main": [
+        [
+          {
+            "node": "Notificar la falla",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "a8494727-9376-4a11-a0bc-421535351c2d",
+  "meta": {
+    "instanceId": "d6df57fb1ce86d34dcb7fd9e09b4b5e97a2b8650caf961775d3a6fd18ad3cfb4"
+  },
+  "nodeGroups": [],
+  "id": "Lj4SsYZpDxfSyqvq",
+  "tags": []
+}

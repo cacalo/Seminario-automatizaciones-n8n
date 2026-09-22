@@ -1,0 +1,819 @@
+{
+  "name": "Clase 4 - Cotizaciones a panel",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Que cambia una credencial",
+        "width": 1000,
+        "height": 240,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -540,
+        -420
+      ],
+      "id": "405c2b5a-f070-47db-a109-8f9e5921b77f",
+      "name": "Nota 11"
+    },
+    {
+      "parameters": {
+        "content": "## Disparador",
+        "width": 200,
+        "height": 200,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -780,
+        40
+      ],
+      "id": "d852313b-8af9-4694-86d9-8b99f6dd8133",
+      "name": "Nota 12"
+    },
+    {
+      "parameters": {
+        "content": "## Entrada",
+        "width": 260,
+        "height": 420,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -540,
+        -60
+      ],
+      "id": "94de867b-3019-4382-993a-144d35535e88",
+      "name": "Nota 13"
+    },
+    {
+      "parameters": {
+        "content": "## Proceso",
+        "width": 1180,
+        "height": 420,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        -60
+      ],
+      "id": "ed55f6f9-d472-46bb-a221-84bdcf530c8c",
+      "name": "Nota 14"
+    },
+    {
+      "parameters": {
+        "content": "## Salida",
+        "width": 240,
+        "height": 420,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        980,
+        -60
+      ],
+      "id": "220ddeeb-c766-48c1-b03b-8231b9ea47c3",
+      "name": "Nota 15"
+    },
+    {
+      "parameters": {
+        "content": "## Si algo falla",
+        "width": 760,
+        "height": 260,
+        "color": 1
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        400
+      ],
+      "id": "22af6382-aff5-482e-ac6e-6a4221e4cfc6",
+      "name": "Nota 16"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -740,
+        120
+      ],
+      "id": "6dccbc64-d5c9-4326-8699-a49a8dd27ff8",
+      "name": "Ejecución manual"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.github.com/rate_limit",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github+json"
+            },
+            {
+              "name": "X-GitHub-Api-Version",
+              "value": "2022-11-28"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -480,
+        -320
+      ],
+      "id": "8fe3864e-e2f5-4d60-9745-8a7f5018f518",
+      "name": "Limite sin credencial",
+      "notes": "Sin autenticacion: 60 pedidos por hora, y el limite es por IP.",
+      "notesInFlow": true,
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.github.com/rate_limit",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github+json"
+            },
+            {
+              "name": "X-GitHub-Api-Version",
+              "value": "2022-11-28"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -240,
+        -320
+      ],
+      "id": "a1986d1c-a14b-4925-80ea-a0f8bc854373",
+      "name": "Limite con credencial",
+      "notes": "Con el token: 5000 por hora, y el limite es tuyo.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// La misma URL, el mismo método, el mismo servidor.\n// Lo único distinto entre las dos llamadas es una cabecera.\n\nfunction limite(nombre) {\n  const j = $(nombre).first().json;\n  // Si el límite anónimo ya estaba agotado, GitHub responde 403 y acá no\n  // llega la estructura esperada. Eso no rompe la demostración: la refuerza.\n  return j?.resources?.core?.limit ?? null;\n}\n\nconst sin = limite('Limite sin credencial');\nconst con = limite('Limite con credencial');\n\nreturn [\n  {\n    json: {\n      sin_credencial: sin,\n      con_credencial: con,\n      veces_mas: sin && con ? Math.round(con / sin) : null,\n      nota:\n        sin === null\n          ? 'El limite anonimo ya estaba agotado para esta IP: eso tambien lo arregla la credencial.'\n          : 'Misma URL, mismo metodo. La cabecera es la unica diferencia.',\n    },\n  },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        -320
+      ],
+      "id": "13bd566a-6075-4f96-9e0f-c1a9c90d0407",
+      "name": "Comparar limites",
+      "notes": "Para que se lea de una: 60 contra 5000.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://dolarapi.com/v1/dolares",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -480,
+        120
+      ],
+      "id": "89ea0d84-01cf-44a9-b7b6-128a1601d67a",
+      "name": "Traer cotizaciones",
+      "notes": "API publica, sin nodo dedicado y sin clave. Comparar con el destino.",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// El 200 no garantiza que la respuesta sirva.\n// Este nodo clasifica cada fila: utilizable o no, y por qué.\n\n// Casas que legítimamente no publican precio de compra.\nconst SIN_COMPRA = ['tarjeta'];\n\nfunction aNumero(v) {\n  if (v === null || v === undefined || v === '') return null;\n  const n = Number(v);                 // \"1015.00\" -> 1015\n  return Number.isFinite(n) ? n : NaN; // NaN marca \"vino algo que no es un número\"\n}\n\nconst salida = [];\n\nfor (const item of $input.all()) {\n  const fila = item.json;\n\n  const compra = aNumero(fila.compra);\n  const venta = aNumero(fila.venta);\n\n  let motivo = null;\n\n  if (!fila.casa) {\n    motivo = 'casa_ausente';\n  } else if (Number.isNaN(compra) || Number.isNaN(venta)) {\n    motivo = 'importe_no_numerico';\n  } else if (venta === null) {\n    motivo = 'venta_ausente';\n  } else if (compra === null && !SIN_COMPRA.includes(fila.casa)) {\n    motivo = 'compra_ausente';\n  } else if (compra !== null && venta < compra) {\n    // Numéricamente posible, comercialmente imposible.\n    motivo = 'venta_menor_que_compra';\n  } else if (!fila.fechaActualizacion) {\n    motivo = 'fecha_ausente';\n  }\n\n  salida.push({\n    json: {\n      casa: fila.casa ?? null,\n      nombre: fila.nombre ?? null,\n      compra,\n      venta,\n      fechaActualizacion: fila.fechaActualizacion ?? null,\n      _valido: motivo === null,\n      _motivo: motivo,\n      _original: fila,\n    },\n  });\n}\n\nreturn salida;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -180,
+        120
+      ],
+      "id": "1e7e8f29-f39b-42a8-b545-8e6d94ff999c",
+      "name": "Validar la respuesta",
+      "notes": "Respondió 200. Eso no quiere decir que los datos sirvan.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "650d00a7-8bbb-4a72-a3ba-b97436357263",
+              "leftValue": "={{ $json._valido }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        60,
+        120
+      ],
+      "id": "35037218-fac6-4abe-a243-65c9ebd63f28",
+      "name": "Es utilizable",
+      "notes": "Salida 0 = se publica. Salida 1 = se descarta con motivo."
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1e0ef145-fb44-4ef2-8e92-ec9038e96482",
+              "name": "mercado",
+              "value": "={{ $json.casa }}",
+              "type": "string"
+            },
+            {
+              "id": "fbb3eb31-cf16-4aa0-b9cd-40189b877626",
+              "name": "etiqueta",
+              "value": "={{ $json.nombre }}",
+              "type": "string"
+            },
+            {
+              "id": "32d497b0-0f4f-44bc-a430-deea839e63af",
+              "name": "compra",
+              "value": "={{ $json.compra }}",
+              "type": "number"
+            },
+            {
+              "id": "b33dabe0-db33-4dfa-ad3c-d34afcb5bc03",
+              "name": "venta",
+              "value": "={{ $json.venta }}",
+              "type": "number"
+            },
+            {
+              "id": "98b0368c-c524-421e-bb0d-8ea8563878fd",
+              "name": "spread",
+              "value": "={{ $json.compra === null ? null : Number(($json.venta - $json.compra).toFixed(2)) }}",
+              "type": "number"
+            },
+            {
+              "id": "82e34363-b766-4c03-b72d-2e97752a386e",
+              "name": "actualizado",
+              "value": "={{ $json.fechaActualizacion }}",
+              "type": "string"
+            },
+            {
+              "id": "eb959010-909a-4b7a-9882-86cbc6677c92",
+              "name": "fuente",
+              "value": "dolarapi",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        300,
+        40
+      ],
+      "id": "19de12e2-6a94-4f1c-be4f-64563eb1912a",
+      "name": "Mapear al formato del panel",
+      "notes": "El panel tiene su propio vocabulario. Otra vez traducir campos."
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Un solo envío con todas las cotizaciones, no uno por fila.\n// Sin este nodo, el HTTP de abajo se ejecuta una vez por item y publica\n// seis gists de una sola fila cada uno.\n\nconst mercados = $input.all().map((i) => i.json);\n\nreturn [\n  {\n    json: {\n      panel: 'cotizaciones-usd',\n      generado: new Date().toISOString(),\n      mercados: mercados.length,\n      cotizaciones: mercados,\n    },\n  },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        540,
+        40
+      ],
+      "id": "c089fb18-2759-420f-8131-023c63e7f32f",
+      "name": "Armar el panel",
+      "notes": "Seis items entran, un solo envío sale.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.github.com/gists",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github+json"
+            },
+            {
+              "name": "X-GitHub-Api-Version",
+              "value": "2022-11-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ description: \"Panel de cotizaciones USD — \" + $json.generado.slice(0, 10), public: false, files: { \"panel-cotizaciones.json\": { content: JSON.stringify($json, null, 2) } } }) }}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        780,
+        40
+      ],
+      "id": "4bfbf340-28c2-4feb-baed-f2d7f52f68bc",
+      "name": "Publicar el panel",
+      "notes": "Sin credencial devuelve 401. Es la unica pieza que no se puede exportar.",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1020,
+        40
+      ],
+      "id": "be1ad025-a7d0-4f28-ba1e-169f99026c6d",
+      "name": "Publicado",
+      "notes": "En html_url esta la direccion del gist. Abrirla.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1020,
+        220
+      ],
+      "id": "c69a52bd-62cb-4ddc-8c28-cd72b8a24869",
+      "name": "Cotizaciones descartadas",
+      "notes": "Dos filas, cada una con su motivo. No se tiran: se ven.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Una sola rama de aviso para todos los nodos que pueden fallar.\n// El item que llega por una salida de error trae el error en $json.error.\n\nconst err = $json.error || {};\nconst codigo = err.httpCode ? Number(err.httpCode) : null;\nconst mensaje = err.message ?? String(err);\n\n// GitHub devuelve 403 para dos cosas distintas: \"no tenés permiso\" y \"te\n// pasaste del límite\". La primera es permanente y la segunda no. El código\n// solo no alcanza: hay que mirar el cuerpo.\nconst porLimite = /rate limit|too many requests|abuse detection/i.test(mensaje);\n\n// Distinguir transitorio de permanente cambia qué se hace después:\n// el transitorio ya reintentó solo, el permanente necesita a una persona.\nconst transitorio =\n  codigo === 429 ||\n  (codigo !== null && codigo >= 500) ||\n  codigo === null ||\n  (codigo === 403 && porLimite);\n\n// El 401 y el 403 merecen su propio texto: casi siempre es la credencial,\n// y quien lee el aviso a las tres de la mañana necesita saberlo.\nlet queHacer;\nif (codigo === 401) {\n  queHacer = 'La credencial no sirve: token ausente, mal escrito o vencido.';\n} else if (codigo === 403 && porLimite) {\n  queHacer = 'Límite de uso agotado. Esperar a que se reponga, o repartir la carga.';\n} else if (codigo === 403) {\n  queHacer = 'Autenticado, pero al token le falta el permiso que pide este endpoint.';\n} else if (transitorio) {\n  queHacer = 'Ya se reintentó y siguió fallando. Revisar el estado del proveedor.';\n} else {\n  queHacer = 'No tiene sentido reintentar. Revisar URL, cuerpo enviado o permisos.';\n}\n\nreturn [\n  {\n    json: {\n      flujo: $workflow.name,\n      ejecucion: $execution.id,\n      nodo: err.node?.name ?? 'desconocido',\n      codigo_http: codigo,\n      mensaje: err.message ?? String(err),\n      clase: transitorio ? 'transitorio' : 'permanente',\n      que_hacer: queHacer,\n      cuando: new Date().toISOString(),\n    },\n  },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        120,
+        500
+      ],
+      "id": "d901a16f-2962-45aa-9e05-07d68a95e9e5",
+      "name": "Armar el aviso",
+      "notes": "Los dos nodos que pueden fallar entran acá. Una sola rama de aviso.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        380,
+        500
+      ],
+      "id": "090d8653-6d60-480d-ade2-0775728695f2",
+      "name": "Notificar la falla",
+      "notes": "En producción acá va Slack, un correo o una guardia. Hoy alcanza con verlo.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "content": "## Clase 4 — Cotizaciones a un panel\n\nUna API **sin** credencial entra. Una API **con** credencial recibe el resultado.\n\n**Resultado esperado:** 8 cotizaciones llegan, 6 se publican en un gist, 2 se descartan con motivo.\n\nLos nodos de cotizaciones y de publicacion vienen con datos fijados (pin). Asi el flujo corre aunque el aula no tenga internet. Para salir en serio, quitar el pin de ambos.",
+        "width": 520,
+        "height": 260,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        -700
+      ],
+      "id": "ecf621c9-12f6-493a-86e6-540cf9c50e8d",
+      "name": "Nota 17"
+    },
+    {
+      "parameters": {
+        "content": "## Antes de ejecutar: el token\n\n1. GitHub → Settings → Developer settings → **Personal access tokens** → Fine-grained tokens.\n2. Generar uno con un solo permiso: **Account permissions → Gists → Read and write**. No hace falta nada mas.\n3. En n8n, credencial nueva de tipo **Header Auth**:\n   - Name: `Authorization`\n   - Value: `Bearer ghp_...` (el token, con `Bearer ` adelante)\n4. Seleccionarla en los nodos **Limite con credencial** y **Publicar el panel**.\n\nEs gratis, es instantaneo y no pide tarjeta.",
+        "width": 520,
+        "height": 260,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -260,
+        -700
+      ],
+      "id": "0b2a6044-a8e0-4edd-b2e1-44680fce3130",
+      "name": "Nota 18"
+    },
+    {
+      "parameters": {
+        "content": "### La salida de error son dos pasos\n\n1. En el nodo, Settings → **On Error: Continue (using error output)**. Eso *crea* la segunda salida.\n2. **Cablearla** a algún lado.\n\nSolo el paso 1 y el error se descarta en silencio: la ejecución figura como exitosa.\nSolo el paso 2 y la salida nunca dispara.",
+        "width": 460,
+        "height": 260,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        680
+      ],
+      "id": "8622efd1-92a1-44b5-b505-1154b4e2ea46",
+      "name": "Nota 19"
+    },
+    {
+      "parameters": {
+        "content": "### Reintentar sirve para lo transitorio\n\nLos dos HTTP del flujo principal tienen **Retry On Fail** con 3 intentos y 5 s de espera.\n\nUn 429 o un 503 se arreglan solos casi siempre. Un token vencido no se arregla nunca: reintentarlo son tres 401 en vez de uno.",
+        "width": 440,
+        "height": 260,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        260,
+        680
+      ],
+      "id": "4387cda8-2e20-46ca-a7c6-6845a788a0cb",
+      "name": "Nota 20"
+    },
+    {
+      "parameters": {
+        "content": "### Fallas inducidas\n\n**1.** Romper un caracter del token y ejecutar. Mirar el 401 y que dice el aviso.\n\n**2.** Poner el tiempo de espera del destino en 1 ms. ¿Se creo el gist o no?\n\n**3.** En **Validar la respuesta**, cambiar `venta` por `precio`. Ningun nodo se pone en rojo y el panel sale mal.",
+        "width": 440,
+        "height": 280,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        740,
+        680
+      ],
+      "id": "5a3a3846-014c-4c28-94e8-94a441b37a88",
+      "name": "Nota 21"
+    }
+  ],
+  "connections": {
+    "Ejecución manual": {
+      "main": [
+        [
+          {
+            "node": "Limite sin credencial",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Traer cotizaciones",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limite sin credencial": {
+      "main": [
+        [
+          {
+            "node": "Limite con credencial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limite con credencial": {
+      "main": [
+        [
+          {
+            "node": "Comparar limites",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Traer cotizaciones": {
+      "main": [
+        [
+          {
+            "node": "Validar la respuesta",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Armar el aviso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar la respuesta": {
+      "main": [
+        [
+          {
+            "node": "Es utilizable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Es utilizable": {
+      "main": [
+        [
+          {
+            "node": "Mapear al formato del panel",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Cotizaciones descartadas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mapear al formato del panel": {
+      "main": [
+        [
+          {
+            "node": "Armar el panel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Armar el panel": {
+      "main": [
+        [
+          {
+            "node": "Publicar el panel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publicar el panel": {
+      "main": [
+        [
+          {
+            "node": "Publicado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Armar el aviso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Armar el aviso": {
+      "main": [
+        [
+          {
+            "node": "Notificar la falla",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {
+    "Traer cotizaciones": [
+      {
+        "json": {
+          "moneda": "USD",
+          "casa": "oficial",
+          "nombre": "Oficial",
+          "compra": 1020,
+          "venta": 1060,
+          "fechaActualizacion": "2026-03-17T13:04:00.000Z"
+        }
+      },
+      {
+        "json": {
+          "moneda": "USD",
+          "casa": "blue",
+          "nombre": "Blue",
+          "compra": 1185,
+          "venta": 1205,
+          "fechaActualizacion": "2026-03-17T13:02:00.000Z"
+        }
+      },
+      {
+        "json": {
+          "moneda": "USD",
+          "casa": "bolsa",
+          "nombre": "Bolsa",
+          "compra": 1142.5,
+          "venta": 1148.9,
+          "fechaActualizacion": "2026-03-17T13:05:00.000Z"
+        }
+      },
+      {
+        "json": {
+          "moneda": "USD",
+          "casa": "contadoconliqui",
+          "nombre": "Contado con liquidación",
+          "compra": 1160.2,
+          "venta": 1167.4,
+          "fechaActualizacion": "2026-03-17T13:05:00.000Z"
+        }
+      },
+      {
+        "json": {
+          "moneda": "USD",
+          "casa": "mayorista",
+          "nombre": "Mayorista",
+          "compra": "1015.00",
+          "venta": "1018.00",
+          "fechaActualizacion": "2026-03-17T13:00:00.000Z"
+        }
+      },
+      {
+        "json": {
+          "moneda": "USD",
+          "casa": "cripto",
+          "nombre": "Cripto",
+          "compra": 1198.4,
+          "venta": 1176.9,
+          "fechaActualizacion": "2026-03-17T13:06:00.000Z"
+        }
+      },
+      {
+        "json": {
+          "moneda": "USD",
+          "casa": "tarjeta",
+          "nombre": "Tarjeta",
+          "compra": null,
+          "venta": 1378,
+          "fechaActualizacion": "2026-03-17T13:04:00.000Z"
+        }
+      },
+      {
+        "json": {
+          "moneda": "USD",
+          "casa": "mep",
+          "nombre": "MEP",
+          "compra": 1143,
+          "venta": 1149
+        }
+      }
+    ],
+    "Publicar el panel": [
+      {
+        "json": {
+          "url": "https://api.github.com/gists/7f3a9c1e5b2d4086a1f0",
+          "id": "7f3a9c1e5b2d4086a1f0",
+          "html_url": "https://gist.github.com/7f3a9c1e5b2d4086a1f0",
+          "public": false,
+          "created_at": "2026-03-17T13:10:04Z",
+          "description": "Panel de cotizaciones USD — 2026-03-17",
+          "files": {
+            "panel-cotizaciones.json": {
+              "filename": "panel-cotizaciones.json",
+              "type": "application/json",
+              "language": "JSON",
+              "raw_url": "https://gist.githubusercontent.com/alumno/7f3a9c1e5b2d4086a1f0/raw/panel-cotizaciones.json",
+              "size": 812,
+              "truncated": false
+            }
+          },
+          "owner": {
+            "login": "alumno",
+            "html_url": "https://github.com/alumno"
+          }
+        }
+      }
+    ],
+    "Limite sin credencial": [
+      {
+        "json": {
+          "resources": {
+            "core": {
+              "limit": 60,
+              "used": 9,
+              "remaining": 51,
+              "reset": 1774357200
+            }
+          },
+          "rate": {
+            "limit": 60,
+            "used": 9,
+            "remaining": 51,
+            "reset": 1774357200
+          }
+        }
+      }
+    ],
+    "Limite con credencial": [
+      {
+        "json": {
+          "resources": {
+            "core": {
+              "limit": 5000,
+              "used": 12,
+              "remaining": 4988,
+              "reset": 1774357200
+            }
+          },
+          "rate": {
+            "limit": 5000,
+            "used": 12,
+            "remaining": 4988,
+            "reset": 1774357200
+          }
+        }
+      }
+    ]
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "c3e45f94-fc85-4de7-b786-5856d5857cac",
+  "nodeGroups": [],
+  "tags": []
+}
