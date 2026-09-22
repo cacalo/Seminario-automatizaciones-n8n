@@ -1,9 +1,9 @@
 ---
 theme: default
 colorSchema: dark
-title: Seminario de Automatización — Clase 1
+title: Seminario de Automatización
 info: |
-  Clase 1 — Introducción a la automatización. Herramientas y primeros flujos.
+  Clase 0 — Slide placeholder.
   Tecnicatura Universitaria en Programación.
 fonts:
   sans: IBM Plex Sans
@@ -25,12 +25,5 @@ class: text-left
 <div class="mute text-sm mt-14">
 Después dale npm run dev
 </div>
-
-<!--
-Bienvenida breve. No arrancar con la herramienta: primero el problema.
-Pregunta de apertura para el aula: "¿qué tarea repetitiva hicieron esta semana
-que una máquina podría haber hecho?" Anotar dos o tres en el pizarrón y
-retomarlas en la diapositiva de criterios.
--->
 
 ---

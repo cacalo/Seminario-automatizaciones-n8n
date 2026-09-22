@@ -398,7 +398,7 @@ nada es la fuente número uno de "el sistema perdió mi pago".
 
 ---
 
-## Comparaciones que muerden
+## Comparaciones engañosas
 
 <div class="grid grid-cols-2 gap-x-10 gap-y-3 mt-8 text-sm">
 
