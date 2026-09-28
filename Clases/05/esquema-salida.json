@@ -1,0 +1,8 @@
+{
+  "intencion": "compra",
+  "puntaje": 85,
+  "producto": "teclado mecánico inalámbrico",
+  "cantidad": 1,
+  "confianza": 0.9,
+  "motivo": "Pide precio y stock de un producto concreto, con plazo."
+}
