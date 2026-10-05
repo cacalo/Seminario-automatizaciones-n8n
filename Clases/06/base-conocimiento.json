@@ -1,0 +1,74 @@
+[
+  {
+    "id": "kb-01",
+    "titulo": "Plazos de entrega",
+    "vigente_desde": "2026-01-15",
+    "texto": "Las entregas en Rosario y Gran Rosario se realizan dentro de las 48 horas hábiles. Para el resto de Santa Fe, Córdoba y Buenos Aires el plazo es de 3 a 5 días hábiles. Al resto del país, de 5 a 10 días hábiles. Los plazos se cuentan desde la acreditación del pago, no desde la compra."
+  },
+  {
+    "id": "kb-02",
+    "titulo": "Devoluciones por arrepentimiento",
+    "vigente_desde": "2026-02-01",
+    "texto": "El cliente puede devolver un producto sin expresar motivo dentro de los 30 días corridos desde la recepción. El producto debe estar sin uso y con su embalaje original. El costo del envío de devolución corre por cuenta de la empresa."
+  },
+  {
+    "id": "kb-03",
+    "titulo": "Garantía",
+    "vigente_desde": "2025-08-10",
+    "texto": "Todos los productos cuentan con 12 meses de garantía del fabricante contra defectos de fabricación. La garantía no cubre daños por mal uso, golpes, líquidos ni desgaste normal. Para hacerla efectiva hace falta la factura de compra."
+  },
+  {
+    "id": "kb-04",
+    "titulo": "Medios de pago",
+    "vigente_desde": "2026-01-15",
+    "texto": "Se acepta tarjeta de crédito y débito, transferencia bancaria y efectivo en sucursal. Hay 3 y 6 cuotas sin interés con tarjetas de bancos adheridos. No se aceptan cheques."
+  },
+  {
+    "id": "kb-05",
+    "titulo": "Facturación",
+    "vigente_desde": "2025-11-20",
+    "texto": "Se emite factura A a responsables inscriptos que informen su CUIT antes de cerrar la compra, y factura B en el resto de los casos. La factura no se puede modificar después de emitida: si hay un error hay que pedir una nota de crédito."
+  },
+  {
+    "id": "kb-06",
+    "titulo": "Sucursales y horarios",
+    "vigente_desde": "2026-03-01",
+    "texto": "La sucursal centro atiende de lunes a viernes de 9 a 18 y sábados de 9 a 13. La sucursal norte, de lunes a viernes de 10 a 19. La sucursal sur abre en marzo de 2026 y su horario todavía no está definido."
+  },
+  {
+    "id": "kb-07",
+    "titulo": "Descuentos por volumen",
+    "vigente_desde": "2026-02-01",
+    "texto": "A partir de 10 unidades del mismo producto corresponde un 8% de descuento. A partir de 25 unidades, 12%. A partir de 50 unidades el precio se cotiza caso por caso. El descuento se aplica en el momento de la compra y no es retroactivo."
+  },
+  {
+    "id": "kb-08",
+    "titulo": "Baja de comunicaciones",
+    "vigente_desde": "2025-09-01",
+    "texto": "Para dejar de recibir novedades se puede usar el enlace de baja al pie de cualquier correo, o escribir pidiendo la baja. La baja se procesa dentro de las 72 horas y no afecta los correos de seguimiento de una compra en curso."
+  },
+  {
+    "id": "kb-09",
+    "titulo": "Retiro en sucursal",
+    "vigente_desde": "2026-01-15",
+    "texto": "El retiro en sucursal es sin cargo y está disponible en las sucursales centro y norte. El pedido queda reservado 5 días hábiles desde el aviso de que está listo. Hay que presentar el número de pedido y un documento."
+  },
+  {
+    "id": "kb-10",
+    "titulo": "Devoluciones (versión anterior)",
+    "vigente_desde": "2024-06-01",
+    "texto": "El cliente puede devolver un producto sin expresar motivo dentro de los 15 días corridos desde la recepción. El costo del envío de devolución corre por cuenta del cliente."
+  },
+  {
+    "id": "kb-11",
+    "titulo": "Envíos al exterior",
+    "vigente_desde": "2025-05-01",
+    "texto": "No se realizan envíos fuera de la Argentina. Tampoco se gestionan exportaciones ni envíos a través de terceros que operen fuera del país."
+  },
+  {
+    "id": "kb-12",
+    "titulo": "Cambios por falla",
+    "vigente_desde": "2026-02-01",
+    "texto": "Un producto con falla de fábrica se cambia por uno igual dentro de los 10 días de recibido, sin costo. Pasado ese plazo se gestiona por garantía. El cambio por falla es distinto de la devolución por arrepentimiento."
+  }
+]
