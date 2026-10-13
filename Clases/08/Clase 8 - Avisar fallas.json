@@ -1,0 +1,158 @@
+{
+  "name": "Clase 8 - Avisar fallas",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Cuando otro flujo falla",
+        "width": 760,
+        "height": 360,
+        "color": 1
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        40
+      ],
+      "id": "5a4a443a-b3ad-4daa-9274-99fd5edf5b8a",
+      "name": "Nota 5"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        200
+      ],
+      "id": "1d4a5bd0-54ab-467b-bcc0-ee1920c5994d",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Lo que manda el Error Trigger cuando otro flujo falla en producción.\n// Solo dispara en ejecuciones automáticas (Schedule, webhook, reanudaciones),\n// nunca en las que se lanzan a mano desde el editor.\n\nconst e = $input.first().json;\nconst ex = e.execution ?? {};\nconst wf = e.workflow ?? {};\n\n// Si el error lo lanzó \"Stop and Error\", el mensaje ya viene armado por el\n// flujo: etapa, qué pasó y qué hacer. Si no, es un error que nadie previó.\nconst previsto = (ex.lastNodeExecuted ?? '') === 'Detener con error';\n\nreturn [\n  {\n    json: {\n      asunto: (previsto ? '[Fábrica] ' : '[Fábrica · imprevisto] ') + (wf.name ?? 'flujo sin nombre'),\n      flujo: wf.name ?? null,\n      nodo: ex.lastNodeExecuted ?? null,\n      mensaje: ex.error?.message ?? 'sin mensaje',\n      enlace: ex.url ?? null,\n      modo: ex.mode ?? null,\n      previsto,\n    },\n  },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        200
+      ],
+      "id": "d6b66f30-6596-40ba-bb63-8028c658ea53",
+      "name": "Armar el aviso",
+      "notes": "Distingue lo previsto de lo imprevisto.",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "sendTo": "tu.correo@gmail.com",
+        "subject": "={{ $json.asunto }}",
+        "emailType": "html",
+        "message": "=<p><b>{{ $json.flujo }}</b> falló en <b>{{ $json.nodo }}</b>.</p>\n<p>{{ $json.mensaje }}</p>\n<p><a href=\"{{ $json.enlace }}\">Abrir la ejecución</a></p>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        440,
+        200
+      ],
+      "id": "814d4a9c-8e48-4a5b-8277-4524c75f6f4e",
+      "name": "Mandar el aviso",
+      "notes": "Cambiá el destinatario. Credencial Gmail OAuth2.",
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 10000
+    },
+    {
+      "parameters": {
+        "content": "## Clase 8 — Avisar fallas\n\nEste flujo **no se activa** ni tiene disparador propio: lo llama n8n cuando falla otro flujo que lo tenga elegido en *Settings → Error workflow*.\n\nSolo dispara en ejecuciones **de producción**. Las que lanzás a mano desde el editor, aunque fallen, no lo llaman.\n\nEl Error Trigger viene con un error de ejemplo fijado, para poder probar el correo sin romper nada.",
+        "width": 560,
+        "height": 340,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        -320
+      ],
+      "id": "b4ebe052-a30f-4194-84f5-0a62d8c90027",
+      "name": "Nota 6"
+    },
+    {
+      "parameters": {
+        "content": "### Si el aviso falla\n\nSi Gmail no responde, el aviso de la falla también falla, y no hay un tercer flujo que avise de eso.\n\nPor eso el nodo reintenta, y por eso conviene que el aviso use un servicio **distinto** de los que suelen fallar en el flujo principal.",
+        "width": 440,
+        "height": 260,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        540,
+        -320
+      ],
+      "id": "451207bf-5da7-45c1-9c1a-4b6ca6b41e59",
+      "name": "Nota 7"
+    }
+  ],
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Armar el aviso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Armar el aviso": {
+      "main": [
+        [
+          {
+            "node": "Mandar el aviso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {
+    "Error Trigger": [
+      {
+        "json": {
+          "execution": {
+            "id": "1287",
+            "url": "https://n8n.ejemplo.com/workflow/aB3dE5fG7hI9jK1l/executions/1287",
+            "error": {
+              "message": "error_de_nodo: 401 - \"OAuth error: The access token is invalid\" → Credencial: revisar la clave de ese servicio.",
+              "stack": "..."
+            },
+            "lastNodeExecuted": "Detener con error",
+            "mode": "trigger"
+          },
+          "workflow": {
+            "id": "aB3dE5fG7hI9jK1l",
+            "name": "Clase 8 - Fabrica en operacion"
+          }
+        }
+      }
+    ]
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "b835325b-0797-4874-8d32-260e774836d9",
+  "nodeGroups": [],
+  "tags": []
+}
