@@ -1,0 +1,5 @@
+/* Estilos del deck — compartidos con las otras clases.
+   La hoja real vive en la raíz del proyecto; este archivo existe porque
+   Slidev busca style.css en la carpeta del slides.md que le pasás.
+   No agregar reglas acá: editar ../../style.css */
+@import '../../style.css';
